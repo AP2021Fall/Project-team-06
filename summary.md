@@ -105,7 +105,7 @@ The results are:
 |:------:|:-----------:|
 | ``Your username must include at least 4 characters!`` | self explanatory |
 | ``username already taken!`` | If ``<username>`` is already reserved for *another* user |
-| ``New username contains Special Characters! Please remove them and try again!`` | Valid characters are **numbers, letters and underscore (_) |
+| ``New username contains Special Characters! Please remove them and try again!`` | Valid characters are **numbers, letters and underscore (_)** |
 | ``you already have this username!`` | If the user inputs their own username again |
 
 ### Profile Menu: Show Teams
