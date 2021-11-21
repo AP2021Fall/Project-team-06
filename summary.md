@@ -575,6 +575,7 @@ preferred to sort this by time, the information shall be:
     create task --title <task title> --startTime <start time> --deadline <deadline>
 
 | Output | Description |
+|:------:|:-----------:|
 | ``Task created successfully!`` | If all goes well |
 | ``There is another task with this title!`` | Duplicate title |
 | ``Invalid start date!`` | Invalid date format for ``<start date>``, should be ``YYYY-MM-DD|HH:MM`` |
