@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -78,11 +79,26 @@ public class Board {
 		return tasks;
 	}
 
+	/**
+	 * @implNote if the category does not exist, this will create the category, if
+	 * not, it will remove the task from its previous category list and assign it
+	 * to the new one.
+	 * @param task
+	 * @param category
+	 */
 	public void addTaskToCategory(Task task, String category) {
-		task.setCategory(category);
-
-		if (!isValidCategory(category))
+		if (!isValidCategory(category)) {
+			task.setCategory(category);
 			addCategory(category);
+		}
+		else {
+			int catColumnNumber = catMap.get(task.getCategory());
+			ArrayList<Task> listOfTasksInPreviousCategory = columnMap.get(catColumnNumber);
+			for (int i = 0; i < listOfTasksInPreviousCategory.size(); i++)
+				if (listOfTasksInPreviousCategory.get(i).id == task.id) {
+					listOfTasksInPreviousCategory.remove(i);
+				}
+		}
 
 		int catColumnNumber = catMap.get(category);
 		ArrayList<Task> listOfTasksInCategory = columnMap.get(catColumnNumber);
@@ -239,6 +255,11 @@ public class Board {
 		}
 	}
 
+	/**
+	 * @implNote Any task that reaches the end of the pipeline will be
+	 * removed from the it and assigned a DONE state.
+	 * @param taskTitle
+	 */
 	public void moveTaskInPipeline(String taskTitle) {
 		Task task = getTaskByTitle(taskTitle);
 		if (task != null) {
@@ -271,5 +292,41 @@ public class Board {
 			}
 	}
 
+	/**
+	 * @implNote it is assumed that upon deleting a board, any task
+	 * in it will also be deleted and dereferences from any User object
+	 * associated with it.
+	 */
+	public void delete() {
+		columnMap.clear();
+		for (Task task: tasks)
+			task.delete();
+		tasks.clear();
+	}
 
+	public boolean canBeFinalized() {
+		return this.categories.size() > 0;
+	}
+
+	public boolean hasTask(int taskId) {
+		for (Task task: tasks)
+			if (task.getId() == taskId)
+				return true;
+		return false;
+	}
+
+	public String showTasksInState(TaskState state) {
+		String output = "List of " + state.toString() + " tasks:";
+		for (Task task: tasks)
+			if (task.getTaskState().equals(state.toString()))
+				output += String.format("Title: %s\n", task.getTitle());
+		return output;
+	}
+
+	public void restartTask(String taskTitle, String newDeadline) {
+		Task task = getTaskByTitle(taskTitle);
+		task.setTaskState(TaskState.INPROGRESS);
+		task.setCategory(null);
+		task.setDeadline(LocalDate.parse(newDeadline).atStartOfDay());
+	}
 }

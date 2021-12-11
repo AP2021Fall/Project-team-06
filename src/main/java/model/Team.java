@@ -143,9 +143,16 @@ public class Team {
         boards.add(board);
     }
 
+    /**
+     * @implNote Added a few things, so that by deleting a board, any reference to
+     * the tasks in that board are also removed. This makes sure that no user will
+     * have them in their inventory ever.
+     * @param Name
+     */
     public void removeBoard(String Name) {
         for(Board board : boards){
             if(board.getName().equals(Name)){
+                board.delete();
                 boards.remove(board);
                 return;
             }
@@ -254,5 +261,12 @@ public class Team {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isMember(String username) {
+        for (User member: members)
+            if (member.getUsername().equals(username))
+                return true;
+        return false;
     }
 }

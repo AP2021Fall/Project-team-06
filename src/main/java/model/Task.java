@@ -92,6 +92,14 @@ public class Task implements Comparable<Task> {
 		return null;
 	}
 
+	public static void removeTaskById(int id) {
+		for (int i = 0; i < allTasks.size(); i++)
+			if (allTasks.get(i).id == id) {
+				allTasks.remove(i);
+				break;
+			}
+	}
+
 	public static boolean taskExists(int id) {
 		return getTaskById(id) != null;
 	}
@@ -304,4 +312,24 @@ public class Task implements Comparable<Task> {
 //	public String showTaskInline() {
 //
 //	}
+
+	/**
+	 * @implNote remove task from the list of any user associated with it.
+	 */
+	public void delete() {
+		assignedUsers.clear();
+		removeTaskById(id);
+	}
+
+	public boolean hasAssignees() {
+		return this.assignedUsers.size() > 0;
+	}
+
+	public boolean isExpired(LocalDateTime now) {
+		return this.deadline.isBefore(now);
+	}
+
+	public boolean isFinished() {
+		return this.state == TaskState.DONE;
+	}
 }
