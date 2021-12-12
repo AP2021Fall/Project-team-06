@@ -1,6 +1,8 @@
 package model;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,6 +14,9 @@ import java.util.HashMap;
  * For each team, board names MUST be unique.
  */
 public class Board {
+	private static LocalDateTime now = LocalDateTime.now();
+	private static final int DONE_REWARD = 10;
+	private static final int FAIL_REWARD = -5;
 	private static HashMap<String, ArrayList<Board>> teamBoards = new HashMap<String, ArrayList<Board>>();
 	private String name;
 	private String teamName;
@@ -40,10 +45,6 @@ public class Board {
 		}
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public static Board getBoardByName(String teamName, String boardName) {
 		ArrayList<Board> boards = teamBoards.get(teamName);
 		if (boards == null)
@@ -53,6 +54,14 @@ public class Board {
 			if (board.getName().equals(boardName))
 				return board;
 		return null;
+	}
+
+	public static LocalDateTime getNow() { return now; }
+
+	public static void setNow(LocalDateTime newNow) { now = newNow; }
+
+	public String getName() {
+		return name;
 	}
 
 	public static boolean boardExists(String teamName, String boardName) {
@@ -135,7 +144,35 @@ public class Board {
 
 	public void setTaskCategory(String category, String taskTitle) {
 		Task task = Task.getTaskByTitle(teamName, taskTitle);
+		String previousCat = task.getCategory();
 		task.setCategory(category);
+		if (category != null)
+			updateColumnMap(task, previousCat);
+		else
+			unCategorizeTask(task, previousCat);
+	}
+
+	private void unCategorizeTask(Task task, String previousCat) {
+		ArrayList<Task> tasksInPreviousCat = columnMap.get(catMap.get(previousCat));
+		for (int i = 0; i < tasksInPreviousCat.size(); i++)
+			if (tasksInPreviousCat.get(i).getId() == task.getId()) {
+				tasksInPreviousCat.remove(i);
+				break;
+			}
+	}
+
+	private void updateColumnMap(Task task, String previousCat) {
+		int destinationColumn = catMap.get(task.getCategory());
+		if (previousCat != null) {
+			int sourceColumn = catMap.get(previousCat);
+			ArrayList<Task> tasksInSourceColumn = columnMap.get(sourceColumn);
+			for (int i = 0; i < tasksInSourceColumn.size(); i++)
+				if (tasksInSourceColumn.get(i).getId() == task.getId()) {
+					tasksInSourceColumn.remove(i);
+					break;
+				}
+		}
+		columnMap.get(destinationColumn).add(task);
 	}
 
 	public double getTaskProgress(String taskTitle) {
@@ -269,6 +306,7 @@ public class Board {
 					int currentColumn = catMap.get(currentCat);
 					if (currentColumn == categories.size()) {
 						task.setTaskState(TaskState.DONE);
+						unCategorizeTask(task, task.getCategory());
 						task.setCategory(null);
 					}
 					else {
@@ -328,5 +366,62 @@ public class Board {
 		task.setTaskState(TaskState.INPROGRESS);
 		task.setCategory(null);
 		task.setDeadline(LocalDate.parse(newDeadline).atStartOfDay());
+	}
+
+	/**
+	 * @implNote Used for debug, it shows the pipeline of the board and
+	 * the tasks in it.
+	 */
+	public String showBoardPipeline() {
+		int numCats = categories.size();
+		ArrayList<Task> copyOfTasks = createCopyOfTasks();
+		String output = "";
+		String currentDir = "";
+//		System.out.println(categories.toString());
+//		System.out.println(catMap.keySet().toString());
+		for (int i = 1; i <= numCats; i++) {
+			for (String key: catMap.keySet()) {
+				if (catMap.get(key) == i) {
+					currentDir = key;
+					break;
+				}
+			}
+			output += String.format("| %20s |", currentDir);
+		}
+//		System.out.println(columnMap.toString());
+		for (int i = 1; i <= tasks.size(); i++) {
+			output += "\n";
+			for (int column = 1; column <= numCats; column++) {
+				ArrayList<Task> columnTasks = columnMap.get(column);
+				if (columnTasks.size() >= i) {
+//					System.out.println(columnTasks.get(i-1).getTitle());
+					output += String.format("| %20s |", columnTasks.get(i-1).getTitle());
+				}
+				else
+					output += "|                      |";
+			}
+		}
+
+		return output + "\n\n";
+	}
+
+	private ArrayList<Task> createCopyOfTasks() {
+		ArrayList<Task> copyOfTasks = new ArrayList<Task>();
+		for (Task task: tasks)
+			copyOfTasks.add(task);
+		return copyOfTasks;
+	}
+
+	public boolean isTaskDone(String taskTitle) {
+		Task task = getTaskByTitle(taskTitle);
+		return task.getTaskState().equals(TaskState.DONE.toString());
+	}
+
+	public void setDoneScore(User user) {
+		user.addScore(DONE_REWARD);
+	}
+
+	public void setFailScore(User user) {
+		user.addScore(FAIL_REWARD);
 	}
 }

@@ -96,7 +96,7 @@ public class User {
     }
 
     public void addLog() {
-        log.add(LocalDateTime.now());
+        log.add(Board.getNow());
     }
 
     public Role getRole() {
@@ -106,6 +106,8 @@ public class User {
     public int getScore() {
         return score;
     }
+
+    public void addScore(int scoreToAdd) { this.score += scoreToAdd; }
 
     public void setUsername(String Username) {
         username = Username;
@@ -262,7 +264,7 @@ public class User {
         }
         long time;
         for(Task task : assignTasks){
-            time = ChronoUnit.DAYS.between(LocalDateTime.now(), task.getDeadline());
+            time = ChronoUnit.DAYS.between(Board.getNow(), task.getDeadline());
             if(time < 4 && time >= 0){
                 output += "***"+task.getDeadline().format(DateTimeFormatter.ISO_DATE)+"__remaining days: "+time+" team: "+task.getTeamName() + "\n";
             }else if(time < 10){

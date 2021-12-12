@@ -100,7 +100,7 @@ public class BoardController {
         Task task = Task.getTaskById(taskId);
         if (task == null)
             return new ControllerResult("Invalid task id!", false);
-        if (task.isExpired(LocalDateTime.now()))
+        if (task.isExpired(Board.getNow()))
             return new ControllerResult("The deadline of this task has already passed", false);
         if (!task.hasAssignees())
             return new ControllerResult("Please assign this task to someone first", false);
@@ -167,7 +167,9 @@ public class BoardController {
         if (!task.isAssignedToTask(user))
             return new ControllerResult("This task is not assigned to you", false);
         board.moveTaskInPipeline(taskTitle);
-        // TODO: Set scores for finished tasks!!!
+
+        if (board.isTaskDone(taskTitle))
+            board.setDoneScore(user);
 
         return new ControllerResult("Done", true);
     }

@@ -10,7 +10,7 @@ public class Notification {
 	public Notification(String message, User sender) {
 		this.message = message;
 		this.sender = sender;
-		this.date = LocalDateTime.now();
+		this.date = Board.getNow();
 	}
 
 	public String getMessage() {

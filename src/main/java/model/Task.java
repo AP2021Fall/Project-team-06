@@ -262,7 +262,7 @@ public class Task implements Comparable<Task> {
 			des = "No description";
 		String cat = getCategory();
 		if (cat == null)
-			return "Uncategorized";
+			cat = "Uncategorized";
 
 		return String.format("\n\tTitle: %s"
 						+ "\n\tCategory: %s"
