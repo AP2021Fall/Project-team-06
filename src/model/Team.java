@@ -247,4 +247,13 @@ public class Team {
     public void setId(int Id) {
         id = Id;
     }
+	
+    public static boolean teamExists(String teamName) {
+        for(Team team: teams){
+            if(team.getName().equals(teamName)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
