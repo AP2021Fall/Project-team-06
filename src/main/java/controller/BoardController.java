@@ -2,10 +2,8 @@ package controller;
 
 import model.*;
 
-import java.time.LocalDateTime;
-
 public class BoardController {
-    private static BoardController controller = new BoardController();
+    private static final BoardController controller = new BoardController();
     private static final String NO_ACCESS = "You Don't Have Access To Do This Action!";
     private BoardController() {}
 
@@ -53,7 +51,7 @@ public class BoardController {
             return new ControllerResult("There is no board with this name", false);
 
         Board board = Board.getBoardByName(teamName, boardName);
-        if (board.isValidCategory(newCategoryName))
+        if (!board.isValidCategoryToAdd(newCategoryName))
             return new ControllerResult("The name is already taken for a category!", false);
         board.addCategory(newCategoryName);
         return new ControllerResult("Category successfully added", true);
@@ -70,6 +68,12 @@ public class BoardController {
         Board board = Board.getBoardByName(teamName, boardName);
         if (!board.isValidColumnToAdd(column))
             return new ControllerResult("wrong column!", false);
+
+        if (!board.categoryExists(categoryName))
+            board.addNewCategoryAndColumn(column, categoryName);
+        else
+            board.moveCategoryColumn(categoryName, column);
+
         board.moveCategoryColumn(categoryName, column);
         return new ControllerResult("Done", true);
     }
@@ -142,7 +146,7 @@ public class BoardController {
         Task task = board.getTaskByTitle(taskTitle);
         if (task == null)
             return new ControllerResult("There is no task with given information", false);
-        if (!board.isValidCategory(newCategory))
+        if (!board.categoryExists(newCategory))
             return new ControllerResult("Invalid category", false);
         board.setTaskCategory(newCategory, taskTitle);
         return new ControllerResult("Done", true);
@@ -151,26 +155,37 @@ public class BoardController {
     /**
      * @implNote Assumed that we use task title here, it is not
      * mentioned directly in the documentation.
-     * @param username
-     * @param teamName
-     * @param boardName
-     * @return
+     * @param username username of caller
+     * @param teamName name of the team assigned to the task
+     * @param boardName name of the board of the task
      */
-    public ControllerResult moveTaskToNextState(String username, String teamName, String boardName, String taskTitle) {
+    public ControllerResult doNextOnTask(String username, String teamName, String boardName, String taskTitle) {
         Board board = Board.getBoardByName(teamName, boardName);
+
         if (board == null)
             return new ControllerResult("There is no board with this name", false);
         Task task = board.getTaskByTitle(taskTitle);
         if (task == null)
             return new ControllerResult("Invalid task!", false);
+
+        if (checkLeaderPrivilege(username))
+            return doNextLeader(board, taskTitle);
+
         User user = User.getUserByUsername(username);
+        return doNextMember(user, task);
+    }
+
+    private ControllerResult doNextMember(User user, Task task) {
         if (!task.isAssignedToTask(user))
             return new ControllerResult("This task is not assigned to you", false);
-        board.moveTaskInPipeline(taskTitle);
+        task.userIsDone(user);
+        return new ControllerResult("Done", true);
+    }
 
+    private ControllerResult doNextLeader(Board board, String taskTitle) {
+        board.moveTaskInPipeline(taskTitle);
         if (board.isTaskDone(taskTitle))
             board.setDoneScore(taskTitle);
-
         return new ControllerResult("Done", true);
     }
 
@@ -197,22 +212,24 @@ public class BoardController {
         Task task = board.getTaskByTitle(taskTitle);
         if (task == null)
             return new ControllerResult("Invalid task", false);
-        if (!task.getTaskState().equals(TaskState.FAILED.toString()))
+        if (!board.isTaskFailed(taskTitle))
             return new ControllerResult("This task is not in failed section", false);
-        if (TasksController.getController().isValidDeadlineForTask(task, deadline))
+        if (!TasksController.getController().isValidDeadlineForTask(task, deadline))
             return new ControllerResult("Invalid deadline", false);
-        board.restartTask(taskTitle, deadline);
-
         if (category != null) {
-            if (!board.isValidCategory(category))
+            if (!board.categoryExists(category))
                 return new ControllerResult("Invalid category", false);
-            board.setTaskCategory(category, taskTitle);
         }
         if (assigneeName != null) {
             if (!Team.getTeamByName(teamName).isMember(assigneeName))
                 return new ControllerResult("Invalid teammember", false);
-            task.assignUserToTask(User.getUserByUsername(assigneeName));
         }
+
+        board.restartTask(taskTitle, deadline);
+        if (category != null)
+            board.setTaskCategory(category, taskTitle);
+        if (assigneeName != null)
+            task.assignUserToTask(User.getUserByUsername(assigneeName));
 
         return new ControllerResult("Done", true);
     }

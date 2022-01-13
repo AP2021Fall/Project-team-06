@@ -27,6 +27,9 @@ public class Board {
     private final ArrayList<Task> doneTasks;
     private final ArrayList<Task> failTasks;
 
+    public static ArrayList<Board> getTeamBoards(String teamName) {
+        return teamBoards.get(teamName);
+    }
 
     public static Board getBoardByName(String teamName, String boardName) {
         ArrayList<Board> boards = teamBoards.get(teamName);
@@ -41,9 +44,11 @@ public class Board {
 
     public static LocalDateTime getNow() { return now; }
 
-    public void setNow(LocalDateTime newNow) {
+    public static void setNow(LocalDateTime newNow) {
         now = newNow;
-        updateTaskStates();
+        for (ArrayList<Board> teamBoards: teamBoards.values())
+            for (Board board: teamBoards)
+                board.updateTaskStates();
     }
 
     public static void clearAll() {
@@ -94,6 +99,9 @@ public class Board {
         assert team != null;
         return team.getLeader().getUsername();
     }
+    public int getNumberOfCategories() {
+        return catMap.size();
+    }
 
     /**
      * @implNote it is assumed that upon deleting a board, any task
@@ -111,24 +119,40 @@ public class Board {
      * moves expired tasks to failTasks
      */
     private void updateTaskStates() {
-        for (Task task: Task.getTasks())
-            if (task.isExpired(now)) {
-                task.setTaskState(TaskState.FAILED);
-                setFailScore(task.getTitle());
-                unCategorizeTask(task, task.getCategory());
-                failTasks.add(task);
+        for (String category: catMap.keySet()) {
+            for (Task task: catMap.get(category).getTasks()) {
+                if (task.isExpired(now)) {
+                    task.setTaskState(TaskState.FAILED);
+                    setFailScore(task.getTitle());
+                    failTasks.add(task);
+                }
             }
+        }
+
+        for (Task task: failTasks) {
+            if (task.getCategory() != null) {
+                unCategorizeTask(task, task.getCategory());
+                task.removeAllAssignees();
+            }
+        }
     }
 
     /**
      * @param category category to check
      * @return true if category does not exist
      */
-    public boolean isValidCategory(String category) {
+    public boolean isValidCategoryToAdd(String category) {
         for (String currentCategory: catMap.keySet())
             if (category.equals(currentCategory))
                 return false;
         return true;
+    }
+
+    public boolean categoryExists(String category) {
+        for (String currentCategory: catMap.keySet())
+            if (category.equals(currentCategory))
+                return true;
+        return false;
     }
 
     /**
@@ -247,6 +271,7 @@ public class Board {
                     else {
                         String nextCat = getColumnCategory(currentColumn+1);
                         moveTask(task, currentCat, nextCat);
+                        task.resetUserDone();
                     }
                 }
             }
@@ -283,7 +308,7 @@ public class Board {
      */
     public void moveCategoryColumn(String category, int newColumn) {
         if (isValidColumnToAdd(newColumn) && newColumn != catMap.size()) {
-            if (isValidCategory(category)) {
+            if (categoryExists(category)) {
                 int srcColumn = catMap.get(category).getColumn();
                 if (newColumn == srcColumn)
                     return;
@@ -357,11 +382,11 @@ public class Board {
     }
 
     public String showTasksInState(TaskState state) {
-        String output = "List of " + state.toString() + " tasks:";
+        StringBuilder output = new StringBuilder("List of " + state.toString() + " tasks:\n");
         for (Task task: tasks)
             if (task.getTaskState().equals(state.toString()))
-                output += String.format("Title: %s\n", task.getTitle());
-        return output;
+                output.append(String.format("Title: %s\n", task.getTitle()));
+        return output.toString();
     }
 
     // MISC
@@ -385,8 +410,18 @@ public class Board {
     }
 
     public boolean isTaskDone(String taskTitle) {
-        Task task = getTaskByTitle(taskTitle);
-        return task.getTaskState().equals(TaskState.DONE.toString());
+        for (Task task: doneTasks)
+            if (task.getTitle().equals(taskTitle))
+                return true;
+        return false;
+    }
+
+
+    public boolean isTaskFailed(String taskTitle) {
+        for (Task task: failTasks)
+            if (task.getTitle().equals(taskTitle))
+                return true;
+        return false;
     }
 
     public void setDoneScore(String taskTitle) {

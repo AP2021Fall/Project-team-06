@@ -86,8 +86,8 @@ public class TeamController {
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
         }
-        Task task = Task.getTaskByTitle(teamName, taskTitle);
-        return new ControllerResult("progress done"+task.getPercentDone()+"%",true);
+        Board board = Board.getBoardByName(teamName, boardName);
+        return new ControllerResult("progress done"+board.getTaskPercentDone(board.getTaskByTitle(taskTitle))+"%",true);
     }
 
     public ControllerResult changeTeamTaskCategoryInBoard(String teamName, String category, String taskTitle, String boardName){

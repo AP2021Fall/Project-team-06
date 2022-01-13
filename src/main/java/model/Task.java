@@ -129,8 +129,6 @@ public class Task implements Comparable<Task> {
 	public static ArrayList<Task> getTasks() { return allTasks; }
 
 	public static void clearAll() {
-//		for (Task task: allTasks)
-//			task.delete();
 		allTasks.clear();
 		teamTasks.clear();
 		idCounter = 0;
@@ -331,10 +329,22 @@ public class Task implements Comparable<Task> {
 	}
 
 	public boolean isExpired(LocalDateTime now) {
-		return this.deadline.isBefore(now);
+		return !isFinished() && this.deadline.isBefore(now);
 	}
 
 	public boolean isFinished() {
 		return this.state == TaskState.DONE;
+	}
+
+	public void userIsDone(User assignee) {
+		assignedUsers.put(assignee, true);
+	}
+
+	public void resetUserDone() {
+		assignedUsers.replaceAll((a, v) -> false);
+	}
+
+	public void removeAllAssignees() {
+		this.assignedUsers.clear();
 	}
 }

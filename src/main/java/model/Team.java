@@ -14,7 +14,6 @@ public class Team {
     private User leader;
     private ArrayList<User> members;
     private ArrayList<Notification> chat;
-    private ArrayList<Board> boards;
 
     public Team(String name, User leader) {
         this.id = assignId();
@@ -22,7 +21,6 @@ public class Team {
         this.leader = leader;
         this.members = new ArrayList<User>();
         this.chat = new ArrayList<Notification>();
-        this.boards = new ArrayList<Board>();
         teams.add(this);
     }
 
@@ -52,6 +50,10 @@ public class Team {
             }
         }
         return null;
+    }
+
+    public static boolean teamExists(String name) {
+        return getTeamByName(name) != null;
     }
 
     public static String showPendingTeams() {
@@ -98,7 +100,7 @@ public class Team {
     public String showRoadmap() {
         String output = "";
         ArrayList<Task> allTasks = new ArrayList<>();
-        for(Board board : boards){
+        for(Board board : Board.getTeamBoards(name)){
             allTasks = board.getTasks();
             for(Task task : allTasks){
                 output += task.getTitle()+" : "+board.getTaskPercentDone(task)+"% done\n";
@@ -119,14 +121,13 @@ public class Team {
     }
 
     public String showTasks() {
-        if(boards.size()<1){
+        if(Board.getTeamBoards(name).size()<1){
             return "no task yet";
         }
         String output = "";
         int i=1;
-        ArrayList<Task> allTasks = new ArrayList<>();
-        ArrayList<User> assignUser = new ArrayList<>();
-        for(Board board : boards){
+        ArrayList<Task> allTasks;
+        for(Board board : Board.getTeamBoards(name)){
             allTasks = board.getTasks();
             for(Task task : allTasks){
                 output += i+"."+task.getTitle()+": id "+task.getId()+",creation date : "+task.getCreationDate();
@@ -141,22 +142,22 @@ public class Team {
         return output;
     }
 
-    public void addBoard(String Name) {
-        Board board = new Board(name, Name);
-        boards.add(board);
+    public void addBoard(String boardName) {
+        if (!Board.boardExists(name, boardName))
+            new Board(name, boardName);
     }
 
     /**
      * @implNote Added a few things, so that by deleting a board, any reference to
      * the tasks in that board are also removed. This makes sure that no user will
      * have them in their inventory ever.
-     * @param Name
+     * @param Name board name
      */
     public void removeBoard(String Name) {
-        for(Board board : boards){
-            if(board.getName().equals(Name)){
+        for(Board board : Board.getTeamBoards(name)){
+            if (board.getName().equals(Name)){
                 board.delete();
-                boards.remove(board);
+                Board.getTeamBoards(name).remove(board);
                 return;
             }
         }
@@ -171,7 +172,7 @@ public class Team {
     }
 
     public void changeTaskCategoryInBoard(String category, String taskTitle, String boardName) {
-        Board.getBoardByName(name, boardName).getTaskByTitle(taskTitle).setCategory(category);
+        Board.getBoardByName(name, boardName).setTaskCategory(category, taskTitle);
     }
 
     public void progressTask(String taskTitle, String boardName) {
