@@ -3,19 +3,22 @@ package model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 
 /**
  * @author Arvin
  * @brief Encapsulate Task class
- * @implNote For a fixed team, task names MUST be unique, this
+ * @implNote For a fixed team, task names MUST be unique, thus
  * a HashMap that maps team names to an ArrayList of Tasks is maintained
- * instead of the usual ArrayList of ever task ever.
+ * instead of the usual ArrayList of every task ever.
  */
 public class Task implements Comparable<Task> {
-	private static ArrayList<Task> allTasks = new ArrayList<Task>();
-	private static HashMap<String, ArrayList<Task>> teamTasks = new HashMap<String, ArrayList<Task>>();
+	private static final ArrayList<Task> allTasks = new ArrayList<Task>();
+
+	/**
+	 * Map team names to array list of tasks
+	 */
+	private static final HashMap<String, ArrayList<Task>> teamTasks = new HashMap<String, ArrayList<Task>>();
 	private static int idCounter = 0;
 
 	public final int id;
@@ -27,9 +30,15 @@ public class Task implements Comparable<Task> {
 	private Priority priority;
 	private LocalDateTime creationDate;
 	private LocalDateTime deadline;
-	private ArrayList<User> assignedUsers;
-	private ArrayList<String> assigneduserStates;
-	private ArrayList<Notification> comments;
+
+	/**
+	 * The keys are the list of assigned users.
+	 * The values determine whether this user
+	 * is done with the task in the current
+	 * category.
+	 */
+	private final HashMap<User, Boolean> assignedUsers;
+	private final ArrayList<Notification> comments;
 	private String teamName;
 
 	// By default, priority is set to LOWEST
@@ -42,8 +51,7 @@ public class Task implements Comparable<Task> {
 		this.description = null;
 		this.priority = Priority.LOWEST;
 		this.category = null;
-		this.assignedUsers = new ArrayList<User>();
-		this.assigneduserStates = new ArrayList<String>();
+		this.assignedUsers = new HashMap<User, Boolean>();
 		this.comments = new ArrayList<Notification>();
 		this.state = TaskState.INPROGRESS;
 		this.teamName = null;
@@ -118,6 +126,16 @@ public class Task implements Comparable<Task> {
 		return allTasksAssignedToUser;
 	}
 
+	public static ArrayList<Task> getTasks() { return allTasks; }
+
+	public static void clearAll() {
+//		for (Task task: allTasks)
+//			task.delete();
+		allTasks.clear();
+		teamTasks.clear();
+		idCounter = 0;
+	}
+
 	public final int getId() {
 		return id;
 	}
@@ -174,7 +192,7 @@ public class Task implements Comparable<Task> {
 		return creationDate;
 	}
 
-	public ArrayList<User> getAssignedUsers() {
+	public HashMap<User, Boolean> getAssignedUsers() {
 		return assignedUsers;
 	}
 
@@ -186,54 +204,41 @@ public class Task implements Comparable<Task> {
 		this.teamName = teamName;
 	}
 
-	// By default, the state for
 	public void assignUserToTask(User user) {
 		if (canBeAssigned(user)) {
-			this.assignedUsers.add(user);
-			this.assigneduserStates.add("To Do");
+			this.assignedUsers.put(user, false);
 		}
 	}
 
 	public boolean canBeAssigned(User user) {
 		if (user.getRole() == Role.LEADER || user.getRole() == Role.ADMIN)
 			return false;
-		if (isAssignedToTask(user))
-			return false;
-		return true;
+		return !isAssignedToTask(user);
 	}
 
 	public boolean isAssignedToTask(User user) {
-		for (User assignedUser: assignedUsers)
+		for (User assignedUser: assignedUsers.keySet())
 			if (assignedUser.getUsername().equals(user.getUsername()))
 				return true;
 		return false;
 	}
 
 	public boolean canBeRemoved(User user) {
-		if (isAssignedToTask(user))
-			return true;
-		return false;
+		return isAssignedToTask(user);
 	}
 
 	public void removeAssignedUserToTask(User user) {
 		if (canBeRemoved(user)) {
-			for (int i = 0; i < assignedUsers.size(); i++) {
-				assignedUsers.remove(i);
-				assigneduserStates.remove(i);
-			}
+			assignedUsers.remove(user);
 		}
 	}
 
-	public double getPercentDone() {
-		int numUsers = assigneduserStates.size();
-		if (numUsers == 0)
-			return 0;
-		int numDone = 0;
-		for (String userState: assigneduserStates)
-			if (userState.equals(TaskState.DONE.toString()))
-				++numDone;
-
-		return (double) numDone / numUsers * 100;
+	public double getPercentDone(int numberOfCats, int currentCatNum) {
+		int numberOfDone = currentCatNum * assignedUsers.size();
+		for (Boolean isDone: assignedUsers.values())
+			if (isDone)
+				++numberOfDone;
+		return 100.0 * numberOfDone / (numberOfCats * assignedUsers.size());
 	}
 
 	public ArrayList<Notification> getComments() {
@@ -278,20 +283,20 @@ public class Task implements Comparable<Task> {
 	private String showAssignedUsers() {
 		if (assignedUsers.size() == 0)
 			return "";
-		String output = "";
-		for (User user: assignedUsers)
-			output += user.getUsername() + ", ";
+		StringBuilder output = new StringBuilder();
+		for (User user: assignedUsers.keySet())
+			output.append(user.getUsername()).append(", ");
 		return output.substring(0, output.length()-2);
 	}
 
 	private String listComments() {
 		if (comments.size() == 0)
 			return "No comments";
-		String output = "\n";
+		StringBuilder output = new StringBuilder("\n");
 		for (Notification comment: comments)
-			output += comment.toString();
+			output.append(comment.toString());
 
-		return output;
+		return output.toString();
 	}
 
 	public String showTaskMultilined() {

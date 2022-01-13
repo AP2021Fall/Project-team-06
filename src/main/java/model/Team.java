@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.jar.Attributes.Name;
 
 
 public class Team {
@@ -65,6 +64,11 @@ public class Team {
 		return output;
 	}
 
+    public static void clearAll() {
+        teams.clear();
+        pendingTeams.clear();
+    }
+
     public String showScoredoard() {
         int number=1;
         String strScoreboard = "Rank\tUsername\tScore";
@@ -97,7 +101,7 @@ public class Team {
         for(Board board : boards){
             allTasks = board.getTasks();
             for(Task task : allTasks){
-                output += task.getTitle()+" : "+task.getPercentDone()+"% done\n";
+                output += task.getTitle()+" : "+board.getTaskPercentDone(task)+"% done\n";
             }
         }
         return output;
@@ -128,8 +132,7 @@ public class Team {
                 output += i+"."+task.getTitle()+": id "+task.getId()+",creation date : "+task.getCreationDate();
                 output += ",deadline :"+task.getDeadline()+",assign to :";
                 i++;
-                assignUser = task.getAssignedUsers();
-                for(User user : assignUser){
+                for(User user : task.getAssignedUsers().keySet()){
                     output += user.getUsername()+" ";
                 }
                 output += ",priority :"+task.getPriority().toString()+"\n";
@@ -179,10 +182,9 @@ public class Team {
         Task task = Task.getTaskByTitle(name, category);
         String output = task.getTitle()+": id"+task.getId()+",creation date : ";
         output += task.getCreationDate()+",deadline :"+task.getDeadline()+",assign to :";
-        ArrayList<User> assignUser = task.getAssignedUsers();
-        for(User user : assignUser){
+        for(User user : task.getAssignedUsers().keySet()){
             output += user.getUsername()+" ";
-            }
+        }
         output += ",priority :"+task.getPriority().toString();
         return output;
     }
@@ -196,10 +198,9 @@ public class Team {
         Task task = Task.getTaskById(id);
         String output = task.getTitle()+": id"+task.getId()+",creation date : ";
         output += task.getCreationDate()+",deadline :"+task.getDeadline()+",assign to :";
-        ArrayList<User> assignUser = task.getAssignedUsers();
-        for(User user : assignUser){
+        for(User user : task.getAssignedUsers().keySet()){
             output += user.getUsername()+" ";
-            }
+        }
         output += ",priority :"+task.getPriority().toString();
         return output;
     }
@@ -240,6 +241,7 @@ public class Team {
 
     public void assignMemberToTask(String username, String taskTitle) {
         Task task = Task.getTaskByTitle(name, taskTitle);
+        assert task != null;
         task.assignUserToTask(User.getUserByUsername(username));
     }
 

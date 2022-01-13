@@ -95,6 +95,11 @@ public class User {
         return false;
     }
 
+    public static void clearAll() {
+        users.clear();
+        idCounter = 0;
+    }
+
     public void addLog() {
         log.add(Board.getNow());
     }

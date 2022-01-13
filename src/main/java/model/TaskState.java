@@ -13,6 +13,9 @@ public enum TaskState {
 		}
 	},
 
+	/**
+	 * If not DONE or FAILED, task is INPROGRESS
+	 */
 	INPROGRESS {
 		public String toString() {
 			return "In Progress";

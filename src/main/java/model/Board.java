@@ -1,427 +1,465 @@
 package model;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * @author Arvin
- * @brief Implements the Board class.
- * @implNote Just like Task, this class also maintains a
- * HashMap of team name to array list of boards.
- * For each team, board names MUST be unique.
- */
 public class Board {
-	private static LocalDateTime now = LocalDateTime.now();
-	private static final int DONE_REWARD = 10;
-	private static final int FAIL_REWARD = -5;
-	private static HashMap<String, ArrayList<Board>> teamBoards = new HashMap<String, ArrayList<Board>>();
-	private String name;
-	private String teamName;
-	private ArrayList<Task> tasks;
-	private ArrayList<String> categories;
-	private HashMap<String, Integer> catMap;					// Map CAT to Column numbers
-	private HashMap<Integer, ArrayList<Task>> columnMap;		// Map column number to tasks
+    private static LocalDateTime now = LocalDateTime.now();
+    private static final int DONE_REWARD = 10;
+    private static final int FAIL_REWARD = -5;
 
-	public Board(String teamName, String name) {
-		this.name = name;
-		this.teamName = teamName;
-		this.tasks = new ArrayList<Task>();
+    /**
+     * Maps team name to array list of boards
+     */
+    private static final HashMap<String, ArrayList<Board>> teamBoards = new HashMap<>();
 
-		this.categories = new ArrayList<String>();
-		this.catMap = new HashMap<String, Integer>();
-		this.columnMap = new HashMap<Integer, ArrayList<Task>>();
+    private final String name;
+    private final String teamName;
+    private final ArrayList<Task> tasks;
 
-		ArrayList<Board> currentTeamBoards = teamBoards.get(teamName);
-		if (currentTeamBoards == null) {
-			currentTeamBoards = new ArrayList<Board>();
-			currentTeamBoards.add(this);
-			teamBoards.put(teamName, currentTeamBoards);
-		}
-		else {
-			currentTeamBoards.add(this);
-		}
-	}
+    /**
+     * Map CAT to Column number and tasks
+     */
+    private final HashMap<String, columnTaskPair> catMap;
 
-	public static Board getBoardByName(String teamName, String boardName) {
-		ArrayList<Board> boards = teamBoards.get(teamName);
-		if (boards == null)
-			return null;
+    private final ArrayList<Task> doneTasks;
+    private final ArrayList<Task> failTasks;
 
-		for (Board board: boards)
-			if (board.getName().equals(boardName))
-				return board;
-		return null;
-	}
 
-	public static LocalDateTime getNow() { return now; }
+    public static Board getBoardByName(String teamName, String boardName) {
+        ArrayList<Board> boards = teamBoards.get(teamName);
+        if (boards == null)
+            return null;
 
-	public static void setNow(LocalDateTime newNow) { now = newNow; }
+        for (Board board: boards)
+            if (board.name.equals(boardName))
+                return board;
+        return null;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public static LocalDateTime getNow() { return now; }
 
-	public static boolean boardExists(String teamName, String boardName) {
-		return getBoardByName(teamName, boardName) != null;
-	}
+    public void setNow(LocalDateTime newNow) {
+        now = newNow;
+        updateTaskStates();
+    }
 
-	public boolean isValidCategory(String category) {
-		if (categories.size() == 0)
-			return false;
+    public static void clearAll() {
+        for (String teamName: teamBoards.keySet())
+            for (Board board: teamBoards.get(teamName))
+                board.delete();
+        teamBoards.clear();
+    }
 
-		for (String currentCategory: categories)
-			if (category.equals(currentCategory))
-				return false;
-		return true;
-	}
+    public static boolean boardExists(String teamName, String boardName) {
+        return getBoardByName(teamName, boardName) != null;
+    }
 
-	public void addCategory(String category) {
-		categories.add(category);
-		catMap.put(category, categories.size());
-		columnMap.put(categories.size(), new ArrayList<Task>());
-	}
+    public Board(String teamName, String name) {
+        this.name = name;
+        this.teamName = teamName;
 
-	public ArrayList<Task> getTasks() {
-		return tasks;
-	}
+        this.tasks = new ArrayList<>();
+        this.catMap = new HashMap<>();
+        this.doneTasks = new ArrayList<>();
+        this.failTasks = new ArrayList<>();
 
-	/**
-	 * @implNote if the category does not exist, this will create the category, if
-	 * not, it will remove the task from its previous category list and assign it
-	 * to the new one.
-	 * @param task
-	 * @param category
-	 */
-	public void addTaskToCategory(Task task, String category) {
-		if (!isValidCategory(category)) {
-			task.setCategory(category);
-			addCategory(category);
-		}
-		else {
-			int catColumnNumber = catMap.get(task.getCategory());
-			ArrayList<Task> listOfTasksInPreviousCategory = columnMap.get(catColumnNumber);
-			for (int i = 0; i < listOfTasksInPreviousCategory.size(); i++)
-				if (listOfTasksInPreviousCategory.get(i).id == task.id) {
-					listOfTasksInPreviousCategory.remove(i);
-				}
-		}
+        teamBoards.computeIfAbsent(teamName, k -> new ArrayList<>());
+        teamBoards.get(teamName).add(this);
+    }
 
-		int catColumnNumber = catMap.get(category);
-		ArrayList<Task> listOfTasksInCategory = columnMap.get(catColumnNumber);
-		listOfTasksInCategory.add(task);
-	}
 
-	public void addTask(Task task) {
-		tasks.add(task);
-		task.setTeamName(teamName);
-		// By default, newly created tasks have no category. The state
-		// however is assigned to be TaskState.INPROGRESS
-		task.setTaskState(TaskState.INPROGRESS);
-	}
+    public String getName() {
+        return name;
+    }
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+    public Task getTaskByTitle(String title) {
+        for (Task task: tasks)
+            if (task.getTitle().equals(title))
+                return task;
+        return null;
+    }
+    public Task getTaskById(int id) {
+        for (Task task: tasks)
+            if (task.id == id)
+                return task;
+        return null;
+    }
+    private String getTeamLeaderUsername() {
+        Team team = Team.getTeamByName(teamName);
+        assert team != null;
+        return team.getLeader().getUsername();
+    }
 
-	public void assignUserToTask(String username, int taskId) {
-		User user = User.getUserByUsername(username);
-		Task task = Task.getTaskById(taskId);
-		task.assignUserToTask(user);
-	}
+    /**
+     * @implNote it is assumed that upon deleting a board, any task
+     * in it will also be deleted and dereferences from any User object
+     * associated with it.
+     */
+    public void delete() {
+        catMap.clear();
+        for (Task task: tasks)
+            task.delete();
+        tasks.clear();
+    }
 
-	public Task getTaskByTitle(String title) {
-		for (Task task: tasks)
-			if (task.getTitle().equals(title))
-				return task;
-		return null;
-	}
+    /**
+     * moves expired tasks to failTasks
+     */
+    private void updateTaskStates() {
+        for (Task task: Task.getTasks())
+            if (task.isExpired(now)) {
+                task.setTaskState(TaskState.FAILED);
+                setFailScore(task.getTitle());
+                unCategorizeTask(task, task.getCategory());
+                failTasks.add(task);
+            }
+    }
 
-	public Task getTaskById(int id) {
-		for (Task task: tasks)
-			if (task.id == id)
-				return task;
-		return null;
-	}
+    /**
+     * @param category category to check
+     * @return true if category does not exist
+     */
+    public boolean isValidCategory(String category) {
+        for (String currentCategory: catMap.keySet())
+            if (category.equals(currentCategory))
+                return false;
+        return true;
+    }
 
-	public void setTaskCategory(String category, String taskTitle) {
-		Task task = Task.getTaskByTitle(teamName, taskTitle);
-		String previousCat = task.getCategory();
-		task.setCategory(category);
-		if (category != null)
-			updateColumnMap(task, previousCat);
-		else
-			unCategorizeTask(task, previousCat);
-	}
+    /**
+     * Assumed the category is new
+     * @param category category to add
+     * @implNote by default, added as the final column. column numbers
+     * also start from 0.
+     */
+    public void addCategory(String category) {
+        catMap.put(category, new columnTaskPair(catMap.size()));
+    }
 
-	private void unCategorizeTask(Task task, String previousCat) {
-		ArrayList<Task> tasksInPreviousCat = columnMap.get(catMap.get(previousCat));
-		for (int i = 0; i < tasksInPreviousCat.size(); i++)
-			if (tasksInPreviousCat.get(i).getId() == task.getId()) {
-				tasksInPreviousCat.remove(i);
-				break;
-			}
-	}
+    /**
+     * @param column column number (from 0 to categories.size()-1)
+     * @return category column number
+     */
+    private String getColumnCategory(int column) {
+        for (String category: catMap.keySet())
+            if (catMap.get(category).getColumn() == column)
+                return category;
+        return null;
+    }
 
-	private void updateColumnMap(Task task, String previousCat) {
-		int destinationColumn = catMap.get(task.getCategory());
-		if (previousCat != null) {
-			int sourceColumn = catMap.get(previousCat);
-			ArrayList<Task> tasksInSourceColumn = columnMap.get(sourceColumn);
-			for (int i = 0; i < tasksInSourceColumn.size(); i++)
-				if (tasksInSourceColumn.get(i).getId() == task.getId()) {
-					tasksInSourceColumn.remove(i);
-					break;
-				}
-		}
-		columnMap.get(destinationColumn).add(task);
-	}
+    /**
+     * Add task to board
+     * @param task task to add
+     * @implNote by default, no category and users are assigned
+     */
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setTeamName(teamName);
+        task.setTaskState(TaskState.INPROGRESS);
+    }
 
-	public double getTaskProgress(String taskTitle) {
-		Task task = Task.getTaskByTitle(teamName, taskTitle);
-		return task.getPercentDone();
-	}
+    /**
+     * Assign a username to task
+     * @param username username of the assignee
+     * @param taskId ID of the task
+     */
+    public void assignUserToTask(String username, int taskId) {
+        User user = User.getUserByUsername(username);
+        Task task = Task.getTaskById(taskId);
+        assert task != null;
+        task.assignUserToTask(user);
+    }
 
-	// There is some problem with this, I will not implement it until I ask a few
-	// things from the TAs. (This part is BONUS)
-//	public String showTaskByCategory(String taskTitle) {
-//
-//	}
+    // CATEGORY TASK METHODS
 
-	public String showTasksInCategory(String category) {
-		int catColumn = catMap.get(category);
-		ArrayList<Task> tasksInCategory = columnMap.get(catColumn);
-		if (tasksInCategory.size() == 0)
-			return String.format("No tasks in \'%s\' category.", category);
+    /**
+     * Set category for a task
+     * @param category new category name
+     * @param taskTitle title of the task
+     * @implNote first we get the previous cat, remove
+     * the task from it, and then reassign it. A task can
+     * bew uncategorized by setting {@code category=null}.
+     */
+    public void setTaskCategory(String category, String taskTitle) {
+        Task task = Task.getTaskByTitle(teamName, taskTitle);
+        assert task != null;
+        String previousCat = task.getCategory();
 
-		String output = String.format("Tasks in \'%s\' category", category);
-		for (int i = 1; i <= tasksInCategory.size(); i++)
-			output += String.format("\n%d. %s", i, tasksInCategory.get(i-1).getTitle());
+        if (category == null && previousCat != null)
+            unCategorizeTask(task, previousCat);
+        else if (category != null && previousCat == null)
+            categorizeTask(task, category);
+        else if (category != null)
+            moveTask(task, previousCat, category);
+    }
 
-		return output;
-	}
+    /**
+     * Remove task from its current category.
+     * @param task task to remove
+     * @param previousCat previous category of the task
+     */
+    private void unCategorizeTask(Task task, String previousCat) {
+        if (previousCat == null)
+            return;
 
-	private double getPercentDone() {
-		int nDone = 0;
-		for (Task task: tasks)
-			if (task.getTaskState().equals(TaskState.DONE.toString()))
-				++nDone;
-		return (double) nDone / tasks.size() * 100;
-	}
+        catMap.get(previousCat).removeTask(task);
+    }
 
-	private double getPercentFailed() {
-		int nFailed = 0;
-		for (Task task: tasks)
-			if (task.getTaskState().equals(TaskState.FAILED.toString()))
-				++nFailed;
-		return (double) nFailed / tasks.size() * 100;
-	}
+    /**
+     * move task from source to destination column
+     * @param task task to move
+     * @param previousCat previous category of the task
+     * @param newCat destination category of the task
+     */
+    private void moveTask(Task task, String previousCat, String newCat) {
+        catMap.get(previousCat).removeTask(task);
+        catMap.get(newCat).addTask(task, newCat);
+    }
 
-	private String getTeamLeaderUsername() {
-		Team team = Team.getTeamByName(teamName);
-		return team.getLeader().getUsername();
-	}
+    private void categorizeTask(Task task, String category) {
+        catMap.get(category).addTask(task, category);
+    }
 
-	public String showBoard() {
-		String output = "";
-		output += "\nBoard name: " + name;
-		output += String.format("\nBoard completion: %.2f%%", getPercentDone());
-		output += String.format("\nBoard failed: %.2f%%", getPercentFailed());
-		output += String.format("\nBoard leader: %s", getTeamLeaderUsername());
-		output += "\nBoard tasks:";
-		output += listTasks();
 
-		return output;
-	}
+    /**
+     * move task to the next category
+     * @param taskTitle task title
+     * @implNote if reached the end, task is stated to DONE
+     * and moved to doneTasks.
+     */
+    public void moveTaskInPipeline(String taskTitle) {
+        Task task = getTaskByTitle(taskTitle);
+        if (task != null) {
+            if (task.getTaskState().equals(TaskState.INPROGRESS.toString())) {
+                String currentCat = task.getCategory();
+                if (currentCat != null) {
+                    int currentColumn = catMap.get(currentCat).getColumn();
+                    if (currentColumn == catMap.size()-1) {
+                        task.setTaskState(TaskState.DONE);
+                        unCategorizeTask(task, task.getCategory());
+                        doneTasks.add(task);
+                    }
+                    else {
+                        String nextCat = getColumnCategory(currentColumn+1);
+                        moveTask(task, currentCat, nextCat);
+                    }
+                }
+            }
+        }
+    }
 
-	public String listTasks() {
-		if (tasks.size() == 0)
-			return "";
+    // BOARD PERCENT METHODS
 
-		String output = "";
+    private double getPercentDone() {
+        return (double) doneTasks.size() / tasks.size() * 100;
+    }
 
-		tasks.sort(null);
-		for (Task task: tasks)
-			output += task.toString();
-		return output;
-	}
+    private double getPercentFailed() {
+        return (double) failTasks.size() / tasks.size() * 100;
+    }
 
-	public boolean isValidColumnToAdd(int newColumn) {
-		if (newColumn <= 0 || newColumn > categories.size() + 1)
-			return false;
-		return true;
-	}
+    public double getTaskPercentDone(Task task) {
+        String taskCategory = task.getCategory();
+        return task.getPercentDone(catMap.size(), catMap.get(taskCategory).getColumn());
+    }
 
-	private String getColumnCategory(int column) {
-		for (String category: catMap.keySet())
-			if (catMap.get(category) == column)
-				return category;
-		return null;
-	}
+    // CATEGORY MANIPULATION METHODS
 
-	/**
-	 * @param category
-	 * @param newColumn
-	 * @implNote If category already exists, then this essentially swaps
-	 * the columns. If it does not exist, then it will be created and
-	 * the columns will be shifted.
-	 */
-	public void moveCategoryColumn(String category, int newColumn) {
-		if (isValidColumnToAdd(newColumn)) {
-			if (isValidCategory(category)) {
-				int srcColumn = catMap.get(category);
-				if (newColumn == srcColumn)
-					return;
+    /**
+     * A valid column number for n categories is 0, 1, 2, ..., n
+     */
+    public boolean isValidColumnToAdd(int newColumn) {
+        return newColumn >= 0 && newColumn <= catMap.size();
+    }
 
-				// Swap category column maps
-				String dstCategory = getColumnCategory(newColumn);
-				catMap.put(dstCategory, srcColumn);
-				catMap.put(category, newColumn);
+    /**
+     * @param category category to move
+     * @param newColumn destination columns number
+     */
+    public void moveCategoryColumn(String category, int newColumn) {
+        if (isValidColumnToAdd(newColumn) && newColumn != catMap.size()) {
+            if (isValidCategory(category)) {
+                int srcColumn = catMap.get(category).getColumn();
+                if (newColumn == srcColumn)
+                    return;
 
-				// Swap column tasks
-				ArrayList<Task> dstTasks = columnMap.get(newColumn);
-				columnMap.put(newColumn, columnMap.get(srcColumn));
-				columnMap.put(srcColumn, dstTasks);
-			}
-			else {
-				for (String otherCats: catMap.keySet())
-					if (catMap.get(otherCats) > newColumn)
-						catMap.put(otherCats, catMap.get(otherCats)+1);
-				categories.add(category);
-				catMap.put(category, newColumn);
-				columnMap.put(newColumn, new ArrayList<Task>());
-			}
-		}
-	}
+                String dstCategory = getColumnCategory(newColumn);
+                swapCategories(category, dstCategory);
+            }
+        }
+    }
 
-	/**
-	 * @implNote Any task that reaches the end of the pipeline will be
-	 * removed from the it and assigned a DONE state.
-	 * @param taskTitle
-	 */
-	public void moveTaskInPipeline(String taskTitle) {
-		Task task = getTaskByTitle(taskTitle);
-		if (task != null) {
-			if (task.getTaskState().equals(TaskState.INPROGRESS.toString())) {
-				String currentCat = task.getCategory();
-				if (currentCat != null) {
-					int currentColumn = catMap.get(currentCat);
-					if (currentColumn == categories.size()) {
-						task.setTaskState(TaskState.DONE);
-						unCategorizeTask(task, task.getCategory());
-						task.setCategory(null);
-					}
-					else {
-						String nextCat = getColumnCategory(currentColumn+1);
-						task.setCategory(nextCat);
-						advanceTaskInColumns(taskTitle, currentColumn);
-					}
-				}
-			}
-		}
-	}
+    /**
+     * swap existing category columns
+     * @param cat1 cat1
+     * @param cat2 cat2
+     */
+    private void swapCategories(String cat1, String cat2) {
+        int col1 = catMap.get(cat1).getColumn();
+        int col2 = catMap.get(cat2).getColumn();
 
-	private void advanceTaskInColumns(String taskTitle, int currentColumn) {
-		ArrayList<Task> tasksInColumn = columnMap.get(currentColumn);
-		for (int i = 0; i < tasksInColumn.size(); i++)
-			if (tasksInColumn.get(i).getTitle().equals(taskTitle)) {
-				int nextColumn = currentColumn + 1;
-				ArrayList<Task> tasksInNextColumn = columnMap.get(nextColumn);
-				tasksInNextColumn.add(tasksInColumn.get(i));
-				tasksInColumn.remove(i);
-			}
-	}
+        catMap.get(cat1).setColumn(col2);
+        catMap.get(cat2).setColumn(col1);
+    }
 
-	/**
-	 * @implNote it is assumed that upon deleting a board, any task
-	 * in it will also be deleted and dereferences from any User object
-	 * associated with it.
-	 */
-	public void delete() {
-		columnMap.clear();
-		for (Task task: tasks)
-			task.delete();
-		tasks.clear();
-	}
+    /**
+     * add a new category and a new column in the given place
+     * @param column column number for category
+     * @param category category name
+     * @implNote if there are categories in the same column
+     * and after it, then they will be shifted
+     */
+    public void addNewCategoryAndColumn(int column, String category) {
+        if (isValidColumnToAdd(column)) {
+            shiftFromColumnAfter(column);
+            catMap.put(category, new columnTaskPair(column));
+        }
+    }
 
-	public boolean canBeFinalized() {
-		return this.categories.size() > 0;
-	}
+    private void shiftFromColumnAfter(int column) {
+        for (String otherCats: catMap.keySet()) {
+            int currentColumn = catMap.get(otherCats).getColumn();
+            if (currentColumn >= column) {
+                catMap.get(otherCats).setColumn(currentColumn + 1);
+            }
+        }
+    }
 
-	public boolean hasTask(int taskId) {
-		for (Task task: tasks)
-			if (task.getId() == taskId)
-				return true;
-		return false;
-	}
+    // SHOW METHODS
 
-	public String showTasksInState(TaskState state) {
-		String output = "List of " + state.toString() + " tasks:";
-		for (Task task: tasks)
-			if (task.getTaskState().equals(state.toString()))
-				output += String.format("Title: %s\n", task.getTitle());
-		return output;
-	}
+    public String showBoard() {
+        String output = "";
+        output += "\nBoard name: " + name;
+        output += String.format("\nBoard completion: %.2f%%", getPercentDone());
+        output += String.format("\nBoard failed: %.2f%%", getPercentFailed());
+        output += String.format("\nBoard leader: %s", getTeamLeaderUsername());
+        output += "\nBoard tasks:";
+        output += listTasks();
 
-	public void restartTask(String taskTitle, String newDeadline) {
-		Task task = getTaskByTitle(taskTitle);
-		task.setTaskState(TaskState.INPROGRESS);
-		task.setCategory(null);
-		task.setDeadline(LocalDate.parse(newDeadline).atStartOfDay());
-	}
+        return output;
+    }
 
-	/**
-	 * @implNote Used for debug, it shows the pipeline of the board and
-	 * the tasks in it.
-	 */
-	public String showBoardPipeline() {
-		int numCats = categories.size();
-		ArrayList<Task> copyOfTasks = createCopyOfTasks();
-		String output = "";
-		String currentDir = "";
-//		System.out.println(categories.toString());
-//		System.out.println(catMap.keySet().toString());
-		for (int i = 1; i <= numCats; i++) {
-			for (String key: catMap.keySet()) {
-				if (catMap.get(key) == i) {
-					currentDir = key;
-					break;
-				}
-			}
-			output += String.format("| %20s |", currentDir);
-		}
-//		System.out.println(columnMap.toString());
-		for (int i = 1; i <= tasks.size(); i++) {
-			output += "\n";
-			for (int column = 1; column <= numCats; column++) {
-				ArrayList<Task> columnTasks = columnMap.get(column);
-				if (columnTasks.size() >= i) {
-//					System.out.println(columnTasks.get(i-1).getTitle());
-					output += String.format("| %20s |", columnTasks.get(i-1).getTitle());
-				}
-				else
-					output += "|                      |";
-			}
-		}
+    private String listTasks() {
+        if (tasks.size() == 0)
+            return "";
 
-		return output + "\n\n";
-	}
+        StringBuilder output = new StringBuilder();
 
-	private ArrayList<Task> createCopyOfTasks() {
-		ArrayList<Task> copyOfTasks = new ArrayList<Task>();
-		for (Task task: tasks)
-			copyOfTasks.add(task);
-		return copyOfTasks;
-	}
+        tasks.sort(null);
+        for (Task task: tasks)
+            output.append(task.toString());
+        return output.toString();
+    }
 
-	public boolean isTaskDone(String taskTitle) {
-		Task task = getTaskByTitle(taskTitle);
-		return task.getTaskState().equals(TaskState.DONE.toString());
-	}
+    public String showTasksInState(TaskState state) {
+        String output = "List of " + state.toString() + " tasks:";
+        for (Task task: tasks)
+            if (task.getTaskState().equals(state.toString()))
+                output += String.format("Title: %s\n", task.getTitle());
+        return output;
+    }
 
-	public void setDoneScore(User user) {
-		user.addScore(DONE_REWARD);
-	}
+    // MISC
 
-	public void setFailScore(User user) {
-		user.addScore(FAIL_REWARD);
-	}
+    public boolean canBeFinalized() {
+        return catMap.size() > 0;
+    }
+
+    public boolean hasTask(int taskId) {
+        for (Task task: tasks)
+            if (task.getId() == taskId)
+                return true;
+        return false;
+    }
+
+    public void restartTask(String taskTitle, String newDeadline) {
+        Task task = getTaskByTitle(taskTitle);
+        task.setTaskState(TaskState.INPROGRESS);
+        task.setCategory(null);
+        task.setDeadline(LocalDate.parse(newDeadline).atStartOfDay());
+    }
+
+    public boolean isTaskDone(String taskTitle) {
+        Task task = getTaskByTitle(taskTitle);
+        return task.getTaskState().equals(TaskState.DONE.toString());
+    }
+
+    public void setDoneScore(String taskTitle) {
+        Task task = getTaskByTitle(taskTitle);
+        for (User assignee: task.getAssignedUsers().keySet())
+            assignee.addScore(DONE_REWARD);
+    }
+
+    public void setFailScore(String taskTitle) {
+        Task task = getTaskByTitle(taskTitle);
+        for (User assignee: task.getAssignedUsers().keySet())
+            assignee.addScore(FAIL_REWARD);
+    }
+
+    // DEBUG METHODS
+    /**
+     * @implNote Used for debug, it shows the pipeline of the board and
+     * the tasks in it.
+     */
+    public String showBoardPipeline() {
+        StringBuilder output = new StringBuilder();
+        for (String category: catMap.keySet()) {
+            output.append(String.format("| %2d | %20s |", catMap.get(category).getColumn(), category));
+            for (Task task: catMap.get(category).getTasks()) {
+                output.append(String.format(" %20s (", task.getTitle()));
+                for (User user: task.getAssignedUsers().keySet()) {
+                    output.append(String.format("%s: %b, \t", user.getUsername(), task.getAssignedUsers().get(user)));
+                }
+                output.append(") |");
+            }
+            output.append("\n");
+        }
+        return output.toString();
+    }
+}
+
+class columnTaskPair {
+    private final ArrayList<Task> tasks;
+    private int column;
+
+    public columnTaskPair(int column) {
+        this.column = column;
+        this.tasks = new ArrayList<>();
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+
+    /**
+     * @param task task to remove
+     * @implNote removed task category is set to NULL
+     */
+    public void removeTask(Task task) {
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).id == task.id) {
+                tasks.remove(i);
+                break;
+            }
+        }
+        task.setCategory(null);
+    }
+
+    public void addTask(Task task, String category) {
+        this.tasks.add(task);
+        task.setCategory(category);
+    }
 }

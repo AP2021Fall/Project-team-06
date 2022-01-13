@@ -169,7 +169,7 @@ public class BoardController {
         board.moveTaskInPipeline(taskTitle);
 
         if (board.isTaskDone(taskTitle))
-            board.setDoneScore(user);
+            board.setDoneScore(taskTitle);
 
         return new ControllerResult("Done", true);
     }
