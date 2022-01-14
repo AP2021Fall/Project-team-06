@@ -35,6 +35,14 @@ public class User {
         this.banned = false;
         UserSave.addUser(this);
     }
+    
+    public static void loadUsers(){
+        UserSave.load();
+    }
+
+    public static void saveUser(){
+        UserSave.save();
+    }
 
     private static int assignId() {
         ++idCounter;
