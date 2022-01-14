@@ -25,7 +25,6 @@ public class UserSave{
             System.out.println("IOException load error");
             return;
         } catch (ClassNotFoundException ex) {
-            System.out.println("not found");
             return;
         }
         return;
@@ -39,7 +38,7 @@ public class UserSave{
             out.close();
             fileOut.close();
         } catch (IOException ex) {
-            System.out.println("IOException save errore");
+            System.out.println("IOException save error");
         }
     }
 }
