@@ -16,7 +16,7 @@ public class UserSave{
 
     protected static void load(){
         try {
-            FileInputStream fileIn = new FileInputStream("users");
+            FileInputStream fileIn = new FileInputStream("UsersSave");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             users = (ArrayList<User>) in.readObject();
             in.close();
@@ -32,7 +32,7 @@ public class UserSave{
 
     protected static void save(){
         try{
-            FileOutputStream fileOut = new FileOutputStream("users");
+            FileOutputStream fileOut = new FileOutputStream("UsersSave");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(users);
             out.close();
