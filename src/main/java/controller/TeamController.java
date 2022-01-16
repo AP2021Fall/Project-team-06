@@ -14,6 +14,10 @@ public class TeamController {
         Team team = new Team(teamName, leader);
         return new ControllerResult("team created successfully",true);
     }
+    
+    public void showChatroom(String assignedTeam){
+        Team.getTeamByName(assignedTeam).showChatromm();
+    }
 
     public ControllerResult showTeamScoreboard(String teamName){
         Team team = Team.getTeamByName(teamName);
