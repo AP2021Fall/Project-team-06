@@ -39,14 +39,16 @@ public class UserController {
         return new ControllerResult(output, true);
     }
     
-    public void sendMessage(String assignedTeam, String message){
+    public ControllerResult sendMessage(String assignedTeam, String message){
         Team team = Team.getTeamByName(assignedTeam);
         team.sendMessage(correntUser, message);
+        return new ControllerResult("message send successfully", true);
     }
     
-    public void showTask(String assignedTeam){
+    public ControllerResult showTask(String assignedTeam){
         Team team = Team.getTeamByName(assignedTeam);
-        team.showTasks();
+        String output = team.showTasks();
+        return new ControllerResult(output, true);
     }
     
     public ControllerResult createUser(String username, String password, String email){
