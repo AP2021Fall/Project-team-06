@@ -234,7 +234,8 @@ public class Team {
     }
 
     public void suspendMember(String username) {
-        ;
+        User user = User.getUserByUsername(username);
+        User.banUser(user);
     }
 
     public void deleteMember(String username) {
