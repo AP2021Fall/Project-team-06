@@ -23,6 +23,13 @@ public class TeamController {
         return new ControllerResult("member add successfully", true);
     }
     
+    public ControllerResult promoteTeamLeader(String teamName, String username){
+        Team team = Team.getTeamByName(teamName);
+        User user = User.getUserByUsername(username);
+        team.setLeader(user);
+        return new ControllerResult("team leader promoted successfullt", true);
+    }
+    
     public ControllerResult suspendTeamMember(String username, String teamName){
         Team team = Team.getTeamByName(teamName);
         team.suspendMember(username);
