@@ -7,6 +7,7 @@ import model.User;
 
 public class UserController {
     private static UserController controller = new UserController();
+    public User correntUser;
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
