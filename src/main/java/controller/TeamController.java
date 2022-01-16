@@ -16,6 +16,12 @@ public class TeamController {
         return new ControllerResult("team created successfully",true);
     }
     
+    public ControllerResult suspendTeamMember(String username, String teamName){
+        Team team = Team.getTeamByName(teamName);
+        team.suspendMember(username);
+        return new ControllerResult("memeber suspend successfully", true);
+    }
+    
     public ControllerResult showChatroom(String assignedTeam){
         String message = Team.getTeamByName(assignedTeam).showChatromm();
         return new ControllerResult(message, true);
