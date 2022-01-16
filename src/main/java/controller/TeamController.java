@@ -1,22 +1,48 @@
 package controller;
 
 import model.Board;
+import model.Task;
 import model.Team;
 import model.User;
 
 public class TeamController {
     private static TeamController controller = new TeamController();
 
-    private TeamController() {};
+    public static TeamController getController() {return controller;}
 
-    public static TeamController getController() {
-        return controller;
+    public ControllerResult creatTeam(String teamName) {
+        User leader = UserController.getController().correntUser;
+        Team team = new Team(teamName, leader);
+        return new ControllerResult("team created successfully",true);
+    }
+    
+    public ControllerResult addMemberToTeam(String username, String teamName){
+        User user = User.getUserByUsername(username);
+        Team team = Team.getTeamByName(teamName);
+        team.addMember(user);
+        return new ControllerResult("member add successfully", true);
+    }
+    
+    public ControllerResult promoteTeamLeader(String teamName, String username){
+        Team team = Team.getTeamByName(teamName);
+        User user = User.getUserByUsername(username);
+        team.setLeader(user);
+        return new ControllerResult("team leader promoted successfullt", true);
+    }
+    
+    public ControllerResult suspendTeamMember(String username, String teamName){
+        Team team = Team.getTeamByName(teamName);
+        team.suspendMember(username);
+        return new ControllerResult("memeber suspend successfully", true);
+    }
+    
+    public ControllerResult showChatroom(String assignedTeam){
+        String message = Team.getTeamByName(assignedTeam).showChatromm();
+        return new ControllerResult(message, true);
     }
 
-    public ControllerResult creatTeam(String teamName, String leaderUsername) {
-        User leader = User.getUserByUsername(leaderUsername);
-        new Team(teamName, leader);
-        return new ControllerResult("team created successfully",true);
+    public ControllerResult showTeams(){
+        return new ControllerResult(Team.showTeams(), true);
     }
 
     public ControllerResult showTeamScoreboard(String teamName){

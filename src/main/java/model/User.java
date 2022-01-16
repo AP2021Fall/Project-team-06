@@ -36,6 +36,17 @@ public class User {
         UserSave.addUser(this);
     }
     
+    public String showNotifications(){
+        String output = "";
+        for(Team team : teams){
+            output += team.getName();
+            output += ": ";
+            output += team.showChatromm();
+            output += "\n";
+        }
+        return output;
+    }
+    
     public static void loadUsers(){
         UserSave.load();
     }
@@ -55,6 +66,10 @@ public class User {
 
     public static void changeRole(String username, Role role) {
         getUserByUsername(username).setRole(role);
+    }
+    
+    public void changeUsername(String username){
+        this.username = username;
     }
 
     public static User getUserByUsername(String username) {

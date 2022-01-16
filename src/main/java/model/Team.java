@@ -28,6 +28,11 @@ public class Team {
         ++idCounter;
         return idCounter-1;
     }
+	 
+    public void sendMessage(User sender ,String message){
+        Notification notification = new Notification(message, sender);
+        chat.add(notification);
+    }
 
     public void addMember(User user) {
         members.add(user);
@@ -229,7 +234,8 @@ public class Team {
     }
 
     public void suspendMember(String username) {
-        ;
+        User user = User.getUserByUsername(username);
+        User.banUser(user);
     }
 
     public void deleteMember(String username) {

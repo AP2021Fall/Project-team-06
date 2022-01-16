@@ -3,17 +3,11 @@ package controller;
 import java.time.LocalDate;
 
 import model.Role;
-import model.Team;
 import model.User;
 
 public class UserController {
-    private static final UserController controller = new UserController();
-
-    public static UserController getController() {
-        return controller;
-    }
-
-    private UserController() {}
+    private static UserController controller = new UserController();
+    public static User correntUser;
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
@@ -22,19 +16,49 @@ public class UserController {
         return userRole == Role.ADMIN;
     }
 
-    public ControllerResult createUser(String username, String password1, String password2, String email) {
-        if (User.userExists(username))
-            return new ControllerResult("user with username " + username + " already exists!", false);
-        else if (!password1.equals(password2))
-            return new ControllerResult("Your passwords are not the same!", false);
-        else if (User.emailExists(email))
-            return new ControllerResult("User with this email already exists!", false);
-        else
-            new User(username, password1, email, Role.MEMBER);
-        return new ControllerResult("user created successfully!", true);
+    public static UserController getController() {
+        return controller;
+    }
+    
+    public boolean duplicateUsernames(String username){
+        if(User.userExists(username)){
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean duplicateEmails(String email){
+        if(User.emailExists(email)){
+            return true;
+        }
+        return false;
+    }
+    
+    public static ControllerResult showNotifications(){
+        String output = correntUser.showNotifications();
+        return new ControllerResult(output, true);
+    }
+    
+    public ControllerResult sendMessage(String assignedTeam, String message){
+        Team team = Team.getTeamByName(assignedTeam);
+        team.sendMessage(correntUser, message);
+        return new ControllerResult("message send successfully", true);
+    }
+    
+    public ControllerResult showTask(String assignedTeam){
+        Team team = Team.getTeamByName(assignedTeam);
+        String output = team.showTasks();
+        return new ControllerResult(output, true);
+    }
+    
+    public ControllerResult createUser(String username, String password, String email){
+        Role role = Role.MEMBER;
+        User user = new User(username, password, email, role);
+        return new ControllerResult("user created successfully", true);
     }
 
     public ControllerResult login(String username, String password) {
+        User.loadUsers();
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with this username!", false);
         }
@@ -69,6 +93,10 @@ public class UserController {
         User user = User.getUserByUsername(username);
         user.changePassword(newPassword);
         return new ControllerResult("password changed successfully",true);
+    }
+    
+    public void changeUsername(String username){
+        correntUser.changeUsername(username);
     }
 
     public ControllerResult showLogs(String username){
@@ -106,8 +134,7 @@ public class UserController {
         return new ControllerResult("changed role successfully",true);
     }
 
-    public ControllerResult sendMessage(String username,String message, String teamName){
-        int teamId = Team.getTeamByName(teamName).getId();
+    public ControllerResult sendMessage(String username,String message, int teamId){
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
