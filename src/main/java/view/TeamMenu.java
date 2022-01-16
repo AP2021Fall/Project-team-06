@@ -75,7 +75,7 @@ public class TeamMenu extends Menu {
                 // suspendTeamMember method should be created
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[48])) {
                 String username = commandMatcher.group(1);
-                teamController.promoteTeamLeader();
+                teamController.promoteTeamLeader(assignedTeam,assignedUser);
                 // promoteTeamLeader method should be created
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[49])) {
                 int taskId = Integer.parseInt(commandMatcher.group(1));
