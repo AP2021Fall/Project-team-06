@@ -38,6 +38,11 @@ public class UserController {
         team.sendMessage(correntUser, message);
     }
     
+    public void showTask(String assignedTeam){
+        Team team = Team.getTeamByName(assignedTeam);
+        team.showTasks();
+    }
+    
     public ControllerResult createUser(String username, String password, String email){
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
