@@ -16,6 +16,13 @@ public class TeamController {
         return new ControllerResult("team created successfully",true);
     }
     
+    public ControllerResult addMemberToTeam(String username, String teamName){
+        User user = User.getUserByUsername(username);
+        Team team = Team.getTeamByName(teamName);
+        team.addMember(user);
+        return new ControllerResult("member add successfully", true);
+    }
+    
     public ControllerResult suspendTeamMember(String username, String teamName){
         Team team = Team.getTeamByName(teamName);
         team.suspendMember(username);
