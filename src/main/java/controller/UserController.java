@@ -33,6 +33,11 @@ public class UserController {
         return false;
     }
     
+    public void sendMessage(String assignedTeam, String message){
+        Team team = Team.getTeamByName(assignedTeam);
+        team.sendMessage(correntUser, message);
+    }
+    
     public ControllerResult createUser(String username, String password, String email){
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
