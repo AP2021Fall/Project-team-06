@@ -71,7 +71,7 @@ public class TeamMenu extends Menu {
                 teamController.deleteTeamMember(username, assignedTeam);
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[47])) {
                 String username = commandMatcher.group(1);
-                teamController.suspendTeamMember();
+                teamController.suspendTeamMember(assignedUser,assignedTeam);
                 // suspendTeamMember method should be created
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[48])) {
                 String username = commandMatcher.group(1);
