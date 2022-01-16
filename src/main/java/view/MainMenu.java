@@ -11,34 +11,44 @@ public class MainMenu extends Menu{
     }
 
     public void execute() {
+        System.out.println("Main Menu");
         welcome();
 
         while (true) {
-            Matcher commandMatcher = null;
+            Matcher commandMatcher;
             Command = getInput();
 
             if (isValidCommand(Command, Commands.COMMAND_PATTERNS[2])) {
+                commandMatcher = parse(Command, 2);
                 String menuName = commandMatcher.group(1);
-                switch (menuName){
-                    case "Profile Menu":
-                        ViewController.setNext(new ProfileMenu(null, this));
-                        break;
-                    case "Board Menu":
-                        ViewController.setNext(new BoardMenu(null, this));
-                        break;
-                    case "Team Menu":
-                        ViewController.setNext(new TeamMenu(null, this));
-                        break;
-                    case "Task Page":
-                        ViewController.setNext(new TaskPage(null, this));
-                        break;
-                    case "Calendar Menu":
-                        ViewController.setNext(new CalendarMenu(null, this));
-                        break;
-                    default:
-                        show("the menu doesn't exist");
-                        welcome();
+
+                if (menuName.equals("Profile Menu")) {
+                    ViewController.setNext(new ProfileMenu(null, this));
+                    break;
                 }
+                else if (menuName.equals("Board Menu")) {
+                    ViewController.setNext(new BoardMenu(null, this));
+                    break;
+                }
+                else if (menuName.equals("Team Menu")) {
+                    ViewController.setNext(new TeamMenu(null, this));
+                    break;
+                }
+                else if (menuName.equals("Task Page")) {
+                    ViewController.setNext(new TaskPage(null, this));
+                    break;
+                }
+                else if (menuName.equals("Calendar Menu")) {
+                    ViewController.setNext(new CalendarMenu(null, this));
+                    break;
+                }
+                else {
+                    show("the menu doesn't exist");
+                }
+            }
+            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[59])) {
+                ViewController.setNext(parent);
+                break;
             }
             else
                 show(INVALID_COMMAND);

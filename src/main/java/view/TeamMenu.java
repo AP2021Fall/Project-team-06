@@ -16,6 +16,7 @@ public class TeamMenu extends Menu {
     public static String assignedTeam;
 
     public void execute() {
+        System.out.println("Team Menu");
         ControllerResult result = null;
 
         while (true) {
@@ -30,7 +31,7 @@ public class TeamMenu extends Menu {
             userController.listTeams(assignedUser);
 
             if (isValidCommand(Command, Commands.COMMAND_PATTERNS[16])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[16].matcher(Command);
+                commandMatcher = parse(Command, 16);
 
                 assignedTeam = commandMatcher.group(1);
             }
@@ -45,7 +46,7 @@ public class TeamMenu extends Menu {
 //                // showChatroom method should be created
 //            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[20])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[20].matcher(Command);
+                commandMatcher = parse(Command, 20);
 
                 String message = commandMatcher.group(1);
                 userController.sendMessage(assignedUser, message, assignedTeam);
@@ -64,12 +65,12 @@ public class TeamMenu extends Menu {
 //                // show teams method should be created.
 //            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[40])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[40].matcher(Command);
+                commandMatcher = parse(Command, 40);
 
                 selectedTeam = commandMatcher.group(1);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[41])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[41].matcher(Command);
+                commandMatcher = parse(Command, 41);
 
                 String teamName = commandMatcher.group(1);
                 teamController.creatTeam(teamName, assignedUser);
@@ -97,7 +98,7 @@ public class TeamMenu extends Menu {
 //                // addMemberToTeam method should be created
 //            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[46])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[46].matcher(Command);
+                commandMatcher = parse(Command, 46);
 
                 String username = commandMatcher.group(1);
                 teamController.deleteTeamMember(username, assignedTeam);
@@ -117,7 +118,7 @@ public class TeamMenu extends Menu {
 //                // promoteTeamLeader method should be created
 //            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[49])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[49].matcher(Command);
+                commandMatcher = parse(Command, 49);
 
                 int taskId = Integer.parseInt(commandMatcher.group(1));
                 String username = commandMatcher.group(2);

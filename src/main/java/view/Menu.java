@@ -32,4 +32,11 @@ public abstract class Menu {
 		Matcher matcher = pattern.matcher(command);
 		return matcher.find();
 	}
+
+	public Matcher parse(String command, int patternNum) {
+		Matcher commandMatcher = Commands.COMMAND_PATTERNS[patternNum].matcher(command);
+		if (commandMatcher.matches())
+			return commandMatcher;
+		return null;
+	}
 }

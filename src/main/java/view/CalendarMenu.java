@@ -11,6 +11,7 @@ public class CalendarMenu extends Menu {
     }
 
     public void execute() {
+        System.out.println("Calendar Menu");
         while (true) {
             ControllerResult result = null;
             Command = getInput();

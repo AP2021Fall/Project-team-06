@@ -14,6 +14,7 @@ public class BoardMenu extends Menu {
     }
 
     public void execute() {
+        System.out.println("Board Menu");
         ControllerResult result;
         selectedBoard = null;
 
@@ -26,19 +27,19 @@ public class BoardMenu extends Menu {
             String assignedTeam = TeamMenu.assignedTeam;
 
             if (isValidCommand(Command, Commands.COMMAND_PATTERNS[23])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[23].matcher(Command);
+                commandMatcher = parse(Command, 23);
 
                 String boardName = commandMatcher.group(1);
                 result = boardController.createStageOneBoard(assignedUser, assignedTeam, boardName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[24])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[24].matcher(Command);
+                commandMatcher = parse(Command, 24);
 
                 String boardName = commandMatcher.group(1);
                 result = boardController.removeBoard(assignedUser, assignedTeam, boardName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[25])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[25].matcher(Command);
+                commandMatcher = parse(Command, 2);
 
                 selectedBoard = commandMatcher.group(1);
             }
@@ -46,14 +47,14 @@ public class BoardMenu extends Menu {
                 selectedBoard = null;
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[27])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[27].matcher(Command);
+                commandMatcher = parse(Command, 27);
 
                 String categoryName = commandMatcher.group(1);
                 String boardName = commandMatcher.group(2);
                 result = boardController.addCategoryToBoard(assignedUser, assignedTeam, boardName, categoryName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[28])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[28].matcher(Command);
+                commandMatcher = parse(Command, 28);
 
                 String categoryName = commandMatcher.group(1);
                 int column = Integer.parseInt(commandMatcher.group(2));
@@ -61,20 +62,20 @@ public class BoardMenu extends Menu {
                 result = boardController.moveOrCreateCategoryInColumn(assignedUser, assignedTeam, boardName, categoryName, column);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[29])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[29].matcher(Command);
+                commandMatcher = parse(Command, 29);
 
                 String boardName = commandMatcher.group(1);
                 result = boardController.finalizeBoard(assignedUser, assignedTeam, boardName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[30])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[30].matcher(Command);
+                commandMatcher = parse(Command, 30);
 
                 int taskId = Integer.parseInt(commandMatcher.group(1));
                 String boardName = commandMatcher.group(2);
                 result = boardController.addTaskToBoard(assignedUser, assignedTeam, boardName, taskId);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[31])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[31].matcher(Command);
+                commandMatcher = parse(Command, 31);
 
                 String teamMember = commandMatcher.group(1);
                 int taskId = Integer.parseInt(commandMatcher.group(2));
@@ -82,7 +83,7 @@ public class BoardMenu extends Menu {
                 result = boardController.assignTaskToTeamMember(assignedUser, assignedTeam, boardName, taskId, teamMember);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[32])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[32].matcher(Command);
+                commandMatcher = parse(Command, 32);
 
                 String newCategory = commandMatcher.group(1);
                 String taskTitle = commandMatcher.group(2);
@@ -90,7 +91,7 @@ public class BoardMenu extends Menu {
                 result = boardController.forceChangeTaskCategory(assignedUser, assignedTeam, boardName, taskTitle, newCategory);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[33])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[33].matcher(Command);
+                commandMatcher = parse(Command, 33);
 
                 String task = commandMatcher.group(1);
                 String boardName = commandMatcher.group(2);
@@ -100,14 +101,14 @@ public class BoardMenu extends Menu {
                 //Show Task By Category  -- ToDo
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[35])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[35].matcher(Command);
+                commandMatcher = parse(Command, 35);
 
                 boolean showDone = Boolean.parseBoolean(commandMatcher.group(1));
                 String boardName = commandMatcher.group(2);
                 result = boardController.showDoneOrFailedTasks(assignedTeam, boardName, showDone);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[36])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[36].matcher(Command);
+                commandMatcher = parse(Command, 36);
 
                 String taskTitle = commandMatcher.group(1);
                 String assigneeName = commandMatcher.group(2);
@@ -117,7 +118,7 @@ public class BoardMenu extends Menu {
                 result = boardController.restartTask(assignedUser, assignedTeam, boardName, deadline, taskTitle, assigneeName, category);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[37])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[37].matcher(Command);
+                commandMatcher = parse(Command, 37);
 
                 String boardName = commandMatcher.group(1);
                 result = boardController.showBoardToMember(assignedTeam, boardName);

@@ -77,7 +77,7 @@ public class User {
 
     public static boolean userExists(String username) {
         for(User user : UserSave.getUsers()){
-            if(user.username.equals(username)){
+            if (user.username.equals(username)){
                 return true;
             }
         }
@@ -144,10 +144,7 @@ public class User {
     }
 
     public boolean isValidPassword(String Password) {
-        if(password == Password){
-            return true;
-        }
-        return false;
+        return password.equals(Password);
     }
 
     public void changePassword(String newPassword) {

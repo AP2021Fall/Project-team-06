@@ -12,6 +12,7 @@ public class LoginAndRegisterMenu extends Menu {
     public LoginAndRegisterMenu(String name, Menu parent) {super(name, parent);}
 
     public void execute() {
+        System.out.println("Login and Register Menu");
         ControllerResult result;
         UserController userController = UserController.getController();
 
@@ -19,7 +20,7 @@ public class LoginAndRegisterMenu extends Menu {
             Matcher commandMatcher;
             Command = getInput();
             if (isValidCommand(Command, Commands.COMMAND_PATTERNS[0])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[0].matcher(Command);
+                commandMatcher = parse(Command, 0);
 
                 String userName = commandMatcher.group(1);
                 String passWord1 = commandMatcher.group(2);
@@ -30,7 +31,7 @@ public class LoginAndRegisterMenu extends Menu {
                 show(result.message);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[1])){
-                commandMatcher = Commands.COMMAND_PATTERNS[1].matcher(Command);
+                commandMatcher = parse(Command, 1);
 
                 String userName = commandMatcher.group(1);
                 String password = commandMatcher.group(2);

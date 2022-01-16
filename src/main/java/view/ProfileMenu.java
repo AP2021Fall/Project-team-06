@@ -13,6 +13,7 @@ public class ProfileMenu extends Menu {
     }
 
     public void execute() {
+        System.out.println("Profile Menu");
         while (true) {
             Matcher commandMatcher;
             ControllerResult result = null;
@@ -22,7 +23,7 @@ public class ProfileMenu extends Menu {
             String assignedUser = LoginAndRegisterMenu.assignedUser;
 
             if (isValidCommand(Command, Commands.COMMAND_PATTERNS[3])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[3].matcher(Command);
+                commandMatcher = parse(Command, 3);
 
                 String oldPassword = commandMatcher.group(1);
                 String newPassword = commandMatcher.group(2);
@@ -36,12 +37,10 @@ public class ProfileMenu extends Menu {
 //                // changeUsername method should be created in userController
 //            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[5])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[5].matcher(Command);
-
                 result = userController.listTeams(assignedUser);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[6])) {
-                commandMatcher = Commands.COMMAND_PATTERNS[6].matcher(Command);
+                commandMatcher = parse(Command, 6);
 
                 String teamName = commandMatcher.group(1);
                 result = teamController.showTeamMembers(teamName);
