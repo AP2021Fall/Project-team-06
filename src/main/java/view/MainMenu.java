@@ -17,6 +17,7 @@ public class MainMenu extends Menu{
     TeamMenu teamMenu;
 
     public void execute() {
+        User.loadUsers();
         while (true) {
             Matcher commandMatcher = null;
             Command = getInput();
