@@ -76,6 +76,10 @@ public class UserController {
         user.changePassword(newPassword);
         return new ControllerResult("password changed successfully",true);
     }
+    
+    public void changeUsername(String username){
+        correntUser.changeUsername(username);
+    }
 
     public ControllerResult showLogs(String username){
         if(!User.userExists(username)){
