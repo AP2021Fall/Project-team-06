@@ -7,7 +7,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class User {
-    private static ArrayList<User> users = new ArrayList<>();
     private static int idCounter = 0;
     private ArrayList<Team> teams;
     private final int id;
@@ -34,7 +33,15 @@ public class User {
         this.role = role;
         this.score = 0;
         this.banned = false;
-        users.add(this);
+        UserSave.addUser(this);
+    }
+    
+    public static void loadUsers(){
+        UserSave.load();
+    }
+
+    public static void saveUser(){
+        UserSave.save();
     }
 
     private static int assignId() {
@@ -51,7 +58,7 @@ public class User {
     }
 
     public static User getUserByUsername(String username) {
-        for(User user : users){
+        for(User user : UserSave.getUsers()){
             if(user.username.equals(username)){
                 return user;
             }
@@ -60,7 +67,7 @@ public class User {
     }
 
     public static User getUserById(int id) {
-        for(User user : users){
+        for(User user : UserSave.getUsers()){
             if(user.id == id){
                 return user;
             }
@@ -69,7 +76,7 @@ public class User {
     }
 
     public static boolean userExists(String username) {
-        for(User user : users){
+        for(User user : UserSave.getUsers()){
             if(user.username.equals(username)){
                 return true;
             }
@@ -78,7 +85,7 @@ public class User {
     }
 
     public static boolean userExists(int id) {
-        for(User user : users){
+        for(User user : UserSave.getUsers()){
             if(user.id == id){
                 return true;
             }
@@ -87,7 +94,7 @@ public class User {
     }
 
     public static boolean emailExists(String email) {
-        for(User user : users){
+        for(User user : UserSave.getUsers()){
             if(user.username.equals(email)){
                 return true;
             }
@@ -96,7 +103,7 @@ public class User {
     }
 
     public static void clearAll() {
-        users.clear();
+        UserSave.getUsers().clear();
         idCounter = 0;
     }
 
