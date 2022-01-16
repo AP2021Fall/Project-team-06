@@ -3,10 +3,17 @@ package controller;
 import java.time.LocalDate;
 
 import model.Role;
+import model.Team;
 import model.User;
 
 public class UserController {
-    private static UserController controller = new UserController();
+    private static final UserController controller = new UserController();
+
+    public static UserController getController() {
+        return controller;
+    }
+
+    private UserController() {}
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
@@ -15,8 +22,16 @@ public class UserController {
         return userRole == Role.ADMIN;
     }
 
-    public static UserController getController() {
-        return controller;
+    public ControllerResult createUser(String username, String password1, String password2, String email) {
+        if (User.userExists(username))
+            return new ControllerResult("user with username " + username + " already exists!", false);
+        else if (!password1.equals(password2))
+            return new ControllerResult("Your passwords are not the same!", false);
+        else if (User.emailExists(email))
+            return new ControllerResult("User with this email already exists!", false);
+        else
+            new User(username, password1, email, Role.MEMBER);
+        return new ControllerResult("user created successfully!", true);
     }
 
     public ControllerResult login(String username, String password) {
@@ -91,7 +106,8 @@ public class UserController {
         return new ControllerResult("changed role successfully",true);
     }
 
-    public ControllerResult sendMessage(String username,String message, int teamId){
+    public ControllerResult sendMessage(String username,String message, String teamName){
+        int teamId = Team.getTeamByName(teamName).getId();
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }

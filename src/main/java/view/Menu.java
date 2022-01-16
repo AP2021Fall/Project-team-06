@@ -5,9 +5,10 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 public abstract class Menu {
+	public static final String INVALID_COMMAND = "Invalid command";
 	protected Scanner scanner = new Scanner(System.in);
-	private Menu parent;
-	private String name;
+	protected Menu parent;
+	protected String name;
 
 	public Menu(String name, Menu parent) {
 		this.name = name;

@@ -1,15 +1,21 @@
 package controller;
 
 import model.Board;
-import model.Task;
 import model.Team;
 import model.User;
 
 public class TeamController {
     private static TeamController controller = new TeamController();
 
-    public ControllerResult creatTeam(String teamName, User leader) {
-        Team team = new Team(teamName, leader);
+    private TeamController() {};
+
+    public static TeamController getController() {
+        return controller;
+    }
+
+    public ControllerResult creatTeam(String teamName, String leaderUsername) {
+        User leader = User.getUserByUsername(leaderUsername);
+        new Team(teamName, leader);
         return new ControllerResult("team created successfully",true);
     }
 
