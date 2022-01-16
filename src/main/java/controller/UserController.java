@@ -7,7 +7,7 @@ import model.User;
 
 public class UserController {
     private static UserController controller = new UserController();
-    public User correntUser;
+    public static User correntUser;
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
@@ -34,7 +34,7 @@ public class UserController {
         return false;
     }
     
-    public ControllerResult showNotifications(){
+    public static ControllerResult showNotifications(){
         String output = correntUser.showNotifications();
         return new ControllerResult(output, true);
     }
