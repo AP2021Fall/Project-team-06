@@ -8,6 +8,8 @@ import model.User;
 public class TeamController {
     private static TeamController controller = new TeamController();
 
+    public static TeamController getController() {return controller;}
+
     public ControllerResult creatTeam(String teamName, User leader) {
         Team team = new Team(teamName, leader);
         return new ControllerResult("team created successfully",true);
