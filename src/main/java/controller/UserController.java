@@ -34,6 +34,11 @@ public class UserController {
         return false;
     }
     
+    public ControllerResult showNotifications(){
+        String output = correntUser.showNotifications();
+        return new ControllerResult(output, true);
+    }
+    
     public void sendMessage(String assignedTeam, String message){
         Team team = Team.getTeamByName(assignedTeam);
         team.sendMessage(correntUser, message);
