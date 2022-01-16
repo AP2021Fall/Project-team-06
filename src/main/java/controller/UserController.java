@@ -18,8 +18,29 @@ public class UserController {
     public static UserController getController() {
         return controller;
     }
+    
+    public boolean duplicateUsernames(String username){
+        if(User.userExists(username)){
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean duplicateEmails(String email){
+        if(User.emailExists(email)){
+            return true;
+        }
+        return false;
+    }
+    
+    public ControllerResult createUser(String username, String password, String email){
+        Role role = Role.MEMBER;
+        User user = new User(username, password, email, role);
+        return new ControllerResult("user created successfully", true);
+    }
 
     public ControllerResult login(String username, String password) {
+        User.loadUsers();
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with this username!", false);
         }
