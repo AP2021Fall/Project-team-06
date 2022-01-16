@@ -10,7 +10,8 @@ public class TeamController {
 
     public static TeamController getController() {return controller;}
 
-    public ControllerResult creatTeam(String teamName, User leader) {
+    public ControllerResult creatTeam(String teamName) {
+        User leader = UserController.getController().correntUser;
         Team team = new Team(teamName, leader);
         return new ControllerResult("team created successfully",true);
     }
