@@ -64,7 +64,7 @@ public class TeamMenu extends Menu {
                 teamController.showTeamMembers(assignedTeam);
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[45])) {
                 String username = commandMatcher.group(1);
-                teamController.addMemberToTeam();
+                teamController.addMemberToTeam(assignedUser,assignedTeam);
                 // addMemberToTeam method should be created
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[46])) {
                 String username = commandMatcher.group(1);
