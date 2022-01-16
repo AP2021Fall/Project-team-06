@@ -15,8 +15,13 @@ public class TeamController {
         return new ControllerResult("team created successfully",true);
     }
     
-    public void showChatroom(String assignedTeam){
-        Team.getTeamByName(assignedTeam).showChatromm();
+    public ControllerResult showChatroom(String assignedTeam){
+        String message = Team.getTeamByName(assignedTeam).showChatromm();
+        return new ControllerResult(message, true);
+    }
+
+    public ControllerResult showTeams(){
+        return new ControllerResult(Team.showTeams(), true);
     }
 
     public ControllerResult showTeamScoreboard(String teamName){
