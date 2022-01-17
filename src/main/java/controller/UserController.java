@@ -1,6 +1,8 @@
 package controller;
 
 import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import model.Role;
 import model.Team;
@@ -9,7 +11,6 @@ import view.LoginAndRegisterMenu;
 
 public class UserController {
     private static UserController controller = new UserController();
-    public static User correntUser;
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
@@ -36,14 +37,10 @@ public class UserController {
         return false;
     }
     
-    public static ControllerResult showNotifications(){
-        String output = correntUser.showNotifications();
-        return new ControllerResult(output, true);
-    }
-    
-    public ControllerResult sendMessage(String assignedTeam, String message){
+    public ControllerResult sendMessags(String assignedTeam, String assignedUser, String message){
         Team team = Team.getTeamByName(assignedTeam);
-        team.sendMessage(correntUser, message);
+        User user = User.getUserByUsername(assignedUser);
+        team.sendMessage(user, message);
         return new ControllerResult("message send successfully", true);
     }
     
@@ -60,6 +57,10 @@ public class UserController {
 
         if(!password.equals(password2)){
             return new ControllerResult("These two passwords are not equal",false);
+        }
+        
+        if(!isStrongPassword(password)){
+            return new ControllerResult("Password power is low",false);
         }
 
         Role role = Role.MEMBER;
@@ -78,7 +79,6 @@ public class UserController {
             return new ControllerResult("invalid password!", false);
         }
 
-        correntUser = user;
         correntUser.addLog();
         return new ControllerResult("login successfully", true);
     }
