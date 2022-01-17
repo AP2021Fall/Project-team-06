@@ -3,6 +3,7 @@ package controller;
 import java.time.LocalDate;
 
 import model.Role;
+import model.Team;
 import model.User;
 
 public class UserController {
@@ -42,6 +43,7 @@ public class UserController {
     public ControllerResult sendMessage(String assignedTeam, String message){
         Team team = Team.getTeamByName(assignedTeam);
         team.sendMessage(correntUser, message);
+        User.saveUser();
         return new ControllerResult("message send successfully", true);
     }
     
@@ -54,6 +56,7 @@ public class UserController {
     public ControllerResult createUser(String username, String password, String email){
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
+        User.saveUser();
         return new ControllerResult("user created successfully", true);
     }
 
@@ -66,6 +69,8 @@ public class UserController {
         if(!user.isValidPassword(password)){
             return new ControllerResult("invalid password!", false);
         }
+        correntUser = user;
+        User.saveUser();
         return new ControllerResult("login successfully", true);
     }
 
@@ -75,6 +80,7 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         User.banUser(user);
+        User.saveUser();
         return new ControllerResult("user banned successfully",true);
     }
 
@@ -83,7 +89,8 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User.changeRole(username, newRole);
-        return new ControllerResult("change role successfully",true);
+        User.saveUser();
+    return new ControllerResult("change role successfully",true);
     }
 
     public ControllerResult changeUserPassword(String username, String newPassword){
@@ -92,11 +99,14 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         user.changePassword(newPassword);
+        User.saveUser();
         return new ControllerResult("password changed successfully",true);
     }
     
-    public void changeUsername(String username){
+    public ControllerResult changeUsername(String username){
         correntUser.changeUsername(username);
+        User.saveUser();
+        return new ControllerResult("username change successfully", true);
     }
 
     public ControllerResult showLogs(String username){
@@ -131,6 +141,7 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User.changeRole(username, newRole);
+        User.saveUser();
         return new ControllerResult("changed role successfully",true);
     }
 
@@ -140,6 +151,7 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         user.sendMessage(message,teamId);
+        User.saveUser();
         return new ControllerResult("send message successfully",true);
     }
 
@@ -174,6 +186,7 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         user.setDateOfBrith(LocalDate.parse(date).atStartOfDay());
+        User.saveUser();
         return new ControllerResult("birthday updated successfully",true);
     }
 
