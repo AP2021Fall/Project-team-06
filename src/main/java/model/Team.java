@@ -33,6 +33,12 @@ public class Team {
         Notification notification = new Notification(message, sender);
         chat.add(notification);
     }
+	
+    public static void sendNotification(String message, User sender){
+        for(Team team : teams){
+            team.sendMessage(sender, message);
+        }
+    }
 
     public void addMember(User user) {
         members.add(user);
