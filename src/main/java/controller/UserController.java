@@ -37,13 +37,6 @@ public class UserController {
         return false;
     }
     
-    public ControllerResult sendMessags(String assignedTeam, String assignedUser, String message){
-        Team team = Team.getTeamByName(assignedTeam);
-        User user = User.getUserByUsername(assignedUser);
-        team.sendMessage(user, message);
-        return new ControllerResult("message send successfully", true);
-    }
-    
     public ControllerResult showTask(String assignedTeam){
         Team team = Team.getTeamByName(assignedTeam);
         String output = team.showTasks();
@@ -59,7 +52,7 @@ public class UserController {
             return new ControllerResult("These two passwords are not equal",false);
         }
         
-        if(!isStrongPassword(password)){
+        if(!User.isStrongPassword(password)){
             return new ControllerResult("Password power is low",false);
         }
 
@@ -79,7 +72,7 @@ public class UserController {
             return new ControllerResult("invalid password!", false);
         }
 
-        correntUser.addLog();
+        user.addLog();
         return new ControllerResult("login successfully", true);
     }
 
@@ -127,6 +120,7 @@ public class UserController {
     }
     
     public ControllerResult changeUsername(String username, String assignedUser){
+        User user = User.getUserByUsername(assignedUser);
         if (username.length() < 4)
             return new ControllerResult("Your username must include at least 4 characters!", false);
         else if (username.equals(assignedUser))
@@ -138,7 +132,7 @@ public class UserController {
                     "New username contains Special Characters! Please remove them and try again!",
                     false);
 
-        correntUser.changeUsername(username);
+        user.changeUsername(username);
         return new ControllerResult("username change successfully", true);
     }
 
@@ -171,7 +165,8 @@ public class UserController {
     }
 
     public ControllerResult setRole(String username, Role newRole){
-        if(correntUser.getRole() == Role.MEMBER){
+        User user = User.getUserByUsername(username);
+        if(user.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
         if(!User.userExists(username)){
@@ -235,5 +230,15 @@ public class UserController {
 
     public void updateAssignedUser(String username) {
         LoginAndRegisterMenu.assignedUser = username;
+    }
+    
+    public ControllerResult sendMessage(String username,String message, String teamName){
+        if(!User.userExists(username)){
+            return new ControllerResult("no user exists with username!",false);
+        }
+        User user = User.getUserByUsername(username);
+        Team team = Team.getTeamByName(teamName);
+        team.sendMessage(user, message);
+        return new ControllerResult("send message successfully",true);
     }
 }
