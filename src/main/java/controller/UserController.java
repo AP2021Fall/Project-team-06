@@ -56,6 +56,9 @@ public class UserController {
         if(!password.equals(password2)){
             return new ControllerResult("These two passwords are not equal",false);
         }
+        if(!powerOfPassword(password)){
+            return new ControllerResult("Password power is low",false);
+        }
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
         return new ControllerResult("user created successfully", true);
@@ -100,12 +103,31 @@ public class UserController {
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
+        if(!powerOfPassword(newPassword)){
+            return new ControllerResult("Password power is low",false);
+        }
         User user = User.getUserByUsername(username);
         if(user.oldUsedPassword(newPassword)){
             return new ControllerResult("this password has been userd before",false);
         }
         user.changePassword(newPassword);
         return new ControllerResult("password changed successfully",true);
+    }
+    
+    public boolean powerOfPassword(String password){
+        Pattern pattern1 = Pattern.compile("[a-z]+");
+        Pattern pattern2 = Pattern.compile("[A-Z]+");
+        Pattern pattern3 = Pattern.compile("[1-9]+");
+        if(!pattern1.matcher(password).find()){
+            return false;
+        }
+        if(!pattern2.matcher(password).find()){
+            return false;
+        }
+        if(!pattern3.matcher(password).find()){
+            return false;
+        }
+        return true;
     }
     
     public ControllerResult changeUsername(String username){
