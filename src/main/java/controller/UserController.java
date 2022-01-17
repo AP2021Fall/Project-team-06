@@ -62,7 +62,6 @@ public class UserController {
     }
 
     public ControllerResult login(String username, String password) {
-        User.loadUsers();
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with this username!", false);
         }
