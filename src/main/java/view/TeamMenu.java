@@ -81,7 +81,7 @@ public class TeamMenu extends Menu {
                 String taskTitle = commandMatcher.group(1);
                 String startTime = commandMatcher.group(2);
                 String deadline = commandMatcher.group(3);
-                result = teamController.createTaskForTeam(assignedTeam,taskTitle, startTime, deadline);
+                result = teamController.createTaskForTeam(assignedUser,assignedTeam,taskTitle, startTime, deadline);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[44])) {
                 teamController.showTeamMembers(assignedTeam);
@@ -102,13 +102,13 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 47);
 
                 String username = commandMatcher.group(1);
-                result = teamController.suspendTeamMember(assignedUser,assignedTeam);
+                result = teamController.suspendTeamMember(assignedUser,assignedTeam,username);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[48])) {
                 commandMatcher = parse(Command, 48);
 
                 String username = commandMatcher.group(1);
-                result = teamController.promoteTeamLeader(assignedTeam,assignedUser);
+                result = teamController.promoteTeamLeader(assignedTeam,assignedUser,username);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[49])) {
                 commandMatcher = parse(Command, 49);
