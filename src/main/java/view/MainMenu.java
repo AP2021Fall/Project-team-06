@@ -2,6 +2,8 @@ package view;
 
 import java.util.regex.Matcher;
 
+import model.User;
+
 public class MainMenu extends Menu{
 
     String Command;
