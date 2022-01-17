@@ -57,7 +57,7 @@ public class Commands {
             Pattern.compile("calendar --show deadlines"),
 //            Team Leader Tasks: 39-41
             Pattern.compile("show --teams"),   //Show Teams
-            Pattern.compile("show --team <team name or team number in the list>"),   //Team Select
+            Pattern.compile("show --team ([^\\s]+)"),   //Team Select
             Pattern.compile("create --team ([^\\s]+)"),   //Create Team
 //            Team Leader Commands After Selecting Team 42-51
             Pattern.compile("sudo show --all --tasks"),   //Show All Team Tasks
@@ -79,7 +79,7 @@ public class Commands {
                     "send --notificaion <notification> --team <team name>"),   //Send Notification
             Pattern.compile("show --pendingTeams"),   //Accept New Teams
             Pattern.compile("accept --teams ([^\\s]+)"),   //Accept New Teams
-            Pattern.compile("reject --teams <team names>"),   //Reject Team
+            Pattern.compile("reject --teams ([^\\s]+)"),   //Reject Team
 //            BACK and EXIT 59-60
             Pattern.compile("back"),
             Pattern.compile("exit")

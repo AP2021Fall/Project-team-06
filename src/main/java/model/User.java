@@ -1,11 +1,16 @@
 package model;
 
+import controller.UserController;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class User {
+public class User implements Serializable {
     private static int idCounter = 0;
     private ArrayList<Team> teams;
     private final int id;
@@ -33,17 +38,18 @@ public class User {
         this.score = 0;
         this.banned = false;
         UserSave.addUser(this);
+        usedPassword.add(password);
     }
     
     public String showNotifications(){
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for(Team team : teams){
-            output += team.getName();
-            output += ": ";
-            output += team.showChatromm();
-            output += "\n";
+            output.append(team.getName());
+            output.append(": ");
+            output.append(team.showChatromm());
+            output.append("\n");
         }
-        return output;
+        return output.toString();
     }
     
     public static void loadUsers(){
@@ -66,9 +72,22 @@ public class User {
     public static void changeRole(String username, Role role) {
         getUserByUsername(username).setRole(role);
     }
+
+    public static boolean isStrongPassword(String password) {
+        Pattern pattern = Pattern.compile("(?=.*\\d)(?=.*[A-Z])([^\\s+])");
+        Matcher matcher = pattern.matcher(password);
+
+        return matcher.find() && password.length() >= 8;
+    }
+
+    public static boolean usernameHasSpecialChars(String username) {
+        Pattern pattern = Pattern.compile("(?=.*\\W)");
+        return pattern.matcher(username).find();
+    }
     
     public void changeUsername(String username){
         this.username = username;
+        UserController.getController().updateAssignedUser(username);
     }
 
     public static User getUserByUsername(String username) {

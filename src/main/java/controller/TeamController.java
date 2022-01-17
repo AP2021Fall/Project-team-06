@@ -9,29 +9,78 @@ import model.Team;
 import model.User;
 
 public class TeamController {
-    private static TeamController controller = new TeamController();
+    private static final TeamController controller = new TeamController();
 
     public static TeamController getController() {return controller;}
 
-    public ControllerResult creatTeam(String teamName) {
-        User leader = UserController.correntUser;
-        Team team = new Team(teamName, leader);
-        return new ControllerResult("team created successfully",true);
+    public ControllerResult creatTeam(String leader, String teamName) {
+        if (!Team.isValidTeamName(teamName))
+            return new ControllerResult("Team name is invalid!", false);
+        else if (Team.teamExists(teamName) || Team.pendingExists(teamName))
+            return new ControllerResult("There is another team with this name!", false);
+
+        Team team = new Team(teamName, User.getUserByUsername(leader));
+        Team.addToPending(team);
+        return new ControllerResult("Team created successfully! Waiting For Admin’s confirmation …",true);
     }
-    
-    public ControllerResult addMemberToTeam(String username, String teamName){
-        User userCheck = UserController.getController().correntUser;
-        if(userCheck.getRole() == Role.MEMBER){
+
+    @Privileged
+    public ControllerResult showPendingTeams(String username) {
+        if (User.getUserByUsername(username).getRole() != Role.ADMIN)
+            return new ControllerResult("You do not have access to this section",false);
+
+        return new ControllerResult(Team.showPendingTeams(), true);
+    }
+
+    @Privileged
+    public ControllerResult acceptPendingTeam(String username, String teamNames) {
+        if (User.getUserByUsername(username).getRole() != Role.ADMIN)
+            return new ControllerResult("You do not have access to this section",false);
+
+        String[] teams = teamNames.split("\\s+");
+        for (String teamName: teams)
+            if (!Team.pendingExists(teamName))
+                return new ControllerResult("Some teams are not in pending status! Try again", false);
+
+        Team.acceptPending(teams);
+
+        return new ControllerResult(null, true);
+    }
+
+    @Privileged
+    public ControllerResult rejectPendingTeam(String username, String teamNames) {
+        if (User.getUserByUsername(username).getRole() != Role.ADMIN)
+            return new ControllerResult("You do not have access to this section",false);
+
+        String[] teams = teamNames.split("\\s+");
+        for (String teamName: teams)
+            if (!Team.pendingExists(teamName))
+                return new ControllerResult("Some teams are not in pending status! Try again", false);
+
+        Team.rejectPending(teams);
+
+        return new ControllerResult(null, true);
+    }
+
+    @Privileged
+    public ControllerResult addMemberToTeam(String username, String teamName, String memberUsername){
+        if(User.getUserByUsername(username).getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
-        User user = User.getUserByUsername(username);
+
+        User user = User.getUserByUsername(memberUsername);
+        if (user == null)
+            return new ControllerResult("No user exists with this username!", false);
+
         Team team = Team.getTeamByName(teamName);
+        assert team != null;
+        team.addMember(user);
         return new ControllerResult("member add successfully", true);
     }
     
     public ControllerResult createTaskForTeam(String teamName, String taskTitle,
                                              String startTime, String deadline){
-        User user = UserController.getController().correntUser;
+        User user = UserController.correntUser;
         if(user.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
@@ -42,22 +91,28 @@ public class TeamController {
     }
     
     public ControllerResult promoteTeamLeader(String teamName, String username){
-        User userCheck = UserController.getController().correntUser;
+        User userCheck = UserController.correntUser;
         if(userCheck.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
         Team team = Team.getTeamByName(teamName);
         User user = User.getUserByUsername(username);
+
+        assert team != null;
+
         team.setLeader(user);
         return new ControllerResult("team leader promoted successfullt", true);
     }
     
     public ControllerResult suspendTeamMember(String username, String teamName){
-        User userCheck = UserController.getController().correntUser;
+        User userCheck = UserController.correntUser;
         if(userCheck.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
         Team team = Team.getTeamByName(teamName);
+
+        assert team != null;
+
         team.suspendMember(username);
         return new ControllerResult("memeber suspend successfully", true);
     }
@@ -76,11 +131,16 @@ public class TeamController {
         return new ControllerResult(message, true);
     }
 
-    public ControllerResult showTeams(){
-        if(UserController.correntUser.getRole() != Role.ADMIN){
-            return new ControllerResult("You do not have access to this section", false);
-        }
-        return new ControllerResult(Team.showTeams(), true);
+    @Privileged
+    public ControllerResult showTeams(String username){
+        if (User.getUserByUsername(username).getRole() == Role.MEMBER)
+            return new ControllerResult("You do not have access to this section",false);
+
+        return new ControllerResult(Team.showTeams(username), true);
+    }
+
+    public ControllerResult showAllTeams() {
+        return new ControllerResult(Team.showAllTeams(), true);
     }
 
     public ControllerResult showTeamScoreboard(String teamName){
@@ -92,7 +152,8 @@ public class TeamController {
         Team team = Team.getTeamByName(teamName);
         return new ControllerResult(team.showRoadmap(),true);
     }
-    
+
+    @Privileged
     public ControllerResult promoteTeamMember(String teamName, String username){
         User userCheck = UserController.getController().correntUser;
         if(userCheck.getRole() == Role.MEMBER){
@@ -109,6 +170,7 @@ public class TeamController {
         return new ControllerResult("user promoted successfully",true);
     }
 
+    @Privileged
     public ControllerResult deleteTeamMember(String teamName, String username){
         User userCheck = UserController.getController().correntUser;
         if(userCheck.getRole() == Role.MEMBER){
@@ -129,6 +191,7 @@ public class TeamController {
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
         }
+
         Team team = Team.getTeamByName(teamName);
         return new ControllerResult(team.showMember(),true);
     }
@@ -205,5 +268,22 @@ public class TeamController {
         Team team = Team.getTeamByName(teamName);
         team.removeBoard(boardName);
         return new ControllerResult("board removed successfully",true);
+    }
+
+    public ControllerResult checkTeamToken(String username, String teamToken) {
+        Team team = Team.getTeamByName(teamToken);
+        if (team != null)
+            return new ControllerResult(teamToken, true);
+
+        try {
+            int teamNumber = Integer.parseInt(teamToken);
+            team = Team.getNthTeam(username, teamNumber);
+            if (team != null)
+                return new ControllerResult(team.getName(), true);
+        }
+        catch (NumberFormatException e) {
+            return new ControllerResult("Team not found!", false);
+        }
+        return new ControllerResult("Team not found!", false);
     }
 }

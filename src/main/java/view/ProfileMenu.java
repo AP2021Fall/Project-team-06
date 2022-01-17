@@ -27,15 +27,14 @@ public class ProfileMenu extends Menu {
 
                 String oldPassword = commandMatcher.group(1);
                 String newPassword = commandMatcher.group(2);
-                result = userController.changeUserPassword(assignedUser, newPassword);
+                result = userController.changeUserPassword(assignedUser, oldPassword, newPassword);
             }
-//            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[4])) {
-//                commandMatcher = Commands.COMMAND_PATTERNS[4].matcher(Command);
-//
-//                String userName = commandMatcher.group(1);
-//                userController.changeUsername(userName);
-//                // changeUsername method should be created in userController
-//            }
+            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[4])) {
+                commandMatcher = parse(Command, 4);
+
+                String userName = commandMatcher.group(1);
+                result = userController.changeUsername(userName, assignedUser);
+            }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[5])) {
                 result = userController.listTeams(assignedUser);
             }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import model.Role;
 import model.Team;
 import model.User;
+import view.LoginAndRegisterMenu;
 
 public class UserController {
     private static UserController controller = new UserController();
@@ -53,11 +54,16 @@ public class UserController {
     }
     
     public ControllerResult createUser(String username, String password, String password2, String email){
+        if(User.userExists(username)){
+            return new ControllerResult("user with username " + username + " already exists", false);
+        }
+
         if(!password.equals(password2)){
             return new ControllerResult("These two passwords are not equal",false);
         }
+
         Role role = Role.MEMBER;
-        User user = new User(username, password, email, role);
+        new User(username, password, email, role);
         return new ControllerResult("user created successfully", true);
     }
 
@@ -65,11 +71,15 @@ public class UserController {
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with this username!", false);
         }
+
         User user = User.getUserByUsername(username);
+
         if(!user.isValidPassword(password)){
             return new ControllerResult("invalid password!", false);
         }
+
         correntUser = user;
+        correntUser.addLog();
         return new ControllerResult("login successfully", true);
     }
 
@@ -96,16 +106,38 @@ public class UserController {
         return new ControllerResult("change role successfully",true);
     }
 
-    public ControllerResult changeUserPassword(String username, String newPassword){
+    public ControllerResult changeUserPassword(String username, String oldPassword, String newPassword){
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
+
         User user = User.getUserByUsername(username);
+
+        if (!user.isValidPassword(oldPassword))
+            return new ControllerResult("wrong old password!", false);
+        else if (user.oldUsedPassword(newPassword))
+            return new ControllerResult("Please type a New Password!", false);
+        else if (!User.isStrongPassword(newPassword))
+            return new ControllerResult(
+                    "Please choose A Strong Password (Containing at least 8 characters including 1 digit and 1 Capital Letter)",
+                    false);
+
         user.changePassword(newPassword);
         return new ControllerResult("password changed successfully",true);
     }
     
-    public ControllerResult changeUsername(String username){
+    public ControllerResult changeUsername(String username, String assignedUser){
+        if (username.length() < 4)
+            return new ControllerResult("Your username must include at least 4 characters!", false);
+        else if (username.equals(assignedUser))
+            return new ControllerResult("you already have this username!", false);
+        else if (User.userExists(username))
+            return new ControllerResult("username already taken!", false);
+        else if (User.usernameHasSpecialChars(username))
+            return new ControllerResult(
+                    "New username contains Special Characters! Please remove them and try again!",
+                    false);
+
         correntUser.changeUsername(username);
         return new ControllerResult("username change successfully", true);
     }
@@ -119,6 +151,7 @@ public class UserController {
     }
 
     public ControllerResult listTeams(String username){
+//        System.out.println(username);
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
@@ -198,5 +231,9 @@ public class UserController {
     
     public void saveUsers(){
         User.saveUser();
+    }
+
+    public void updateAssignedUser(String username) {
+        LoginAndRegisterMenu.assignedUser = username;
     }
 }

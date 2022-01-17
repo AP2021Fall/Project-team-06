@@ -1,8 +1,22 @@
 package model;
+import controller.UserController;
+
 import java.io.*;
 import java.util.ArrayList;
 
 public class UserSave{
+    public static final String USERS_SAVE_FILE = "UsersSave";
+
+    public static void init() {
+        File saveFile = new File(USERS_SAVE_FILE);
+        try {
+            saveFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        UserController.getController().loadUsers();
+    }
 
     private static ArrayList<User> users = new ArrayList<>();
 
@@ -16,17 +30,24 @@ public class UserSave{
 
     protected static void load(){
         try {
-            FileInputStream fileIn = new FileInputStream("UsersSave");
+            FileInputStream fileIn = new FileInputStream(USERS_SAVE_FILE);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            users = (ArrayList<User>) in.readObject();
+            Object savedObj = in.readObject();
+
+            if (savedObj != null)
+                users = (ArrayList<User>) savedObj;
+            else
+                users = new ArrayList<>();
+
             in.close();
             fileIn.close();
-        } catch (IOException ex){
+        } catch (EOFException e) {
             return;
-        } catch (ClassNotFoundException ex) {
-            return;
+        } catch (ClassNotFoundException | IOException ex){
+            ex.printStackTrace();
         }
-        return;
+
+        System.out.println("LOADED");
     }
 
     protected static void save(){
@@ -37,7 +58,9 @@ public class UserSave{
             out.close();
             fileOut.close();
         } catch (IOException ex) {
-            System.out.println("IOException save error");
+            ex.printStackTrace();
         }
+
+        System.out.println("SAVED");
     }
 }

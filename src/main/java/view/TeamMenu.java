@@ -15,6 +15,10 @@ public class TeamMenu extends Menu {
     public static String assignedTeam;
 
     public void execute() {
+        assignedTeam = null;
+        System.out.println("Team Menu");
+        welcome();
+
         while (true) {
             Matcher commandMatcher;
             ControllerResult result = null;
@@ -53,17 +57,20 @@ public class TeamMenu extends Menu {
                 result = userController.showTask(assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[39])) {
-                result = teamController.showTeams();
+                result = teamController.showTeams(assignedUser);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[40])) {
                 commandMatcher = parse(Command, 40);
-                // ????
+                result = teamController.checkTeamToken(assignedUser, commandMatcher.group(1));
+
+                if (result.success)
+                    assignedTeam = result.message;
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[41])) {
                 commandMatcher = parse(Command, 41);
 
                 String teamName = commandMatcher.group(1);
-                result = teamController.creatTeam(teamName);
+                result = teamController.creatTeam(assignedUser, teamName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[42])) {
                 result = teamController.showTeamTasks(assignedTeam);
@@ -83,7 +90,7 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 45);
 
                 String username = commandMatcher.group(1);
-                result = teamController.addMemberToTeam(assignedUser,assignedTeam);
+                result = teamController.addMemberToTeam(assignedUser, assignedTeam, username);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[46])) {
                 commandMatcher = parse(Command, 46);
@@ -118,7 +125,22 @@ public class TeamMenu extends Menu {
 
                 String notification = commandMatcher.group(1);
                 String teamName = commandMatcher.group(2);
-                result = teamController.sendNotifications(notification, assignedUser, teamName);
+                result = teamController.sendNotifications(notification, assignedUser);
+            }
+            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[56])) {
+                result = teamController.showPendingTeams(assignedUser);
+            }
+            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[57])) {
+                commandMatcher = parse(Command, 57);
+
+                String teams = commandMatcher.group(1);
+                result = teamController.acceptPendingTeam(assignedUser, teams);
+            }
+            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[58])) {
+                commandMatcher = parse(Command, 58);
+
+                String teams = commandMatcher.group(1);
+                result = teamController.rejectPendingTeam(assignedUser, teams);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[59])) {
                 ViewController.setNext(parent);
@@ -130,6 +152,10 @@ public class TeamMenu extends Menu {
             if (result != null)
                 show(result.message);
         }
+    }
+
+    private void welcome() {
+        show(TeamController.getController().showAllTeams().message);
     }
 }
 

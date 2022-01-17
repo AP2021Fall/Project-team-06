@@ -1,7 +1,6 @@
 package view;
 
 import java.util.regex.Matcher;
-import controller.UserController;
 
 public class MainMenu extends Menu {
 
@@ -12,7 +11,7 @@ public class MainMenu extends Menu {
     }
 
     public void execute() {
-        UserController.getController().loadUsers();
+        welcome();
 
         loop: while (true) {
             Matcher commandMatcher;
@@ -50,5 +49,13 @@ public class MainMenu extends Menu {
             else
                 show(INVALID_COMMAND);
         }
+    }
+
+    private void welcome() {
+        show("1. Profile Menu");
+        show("2. Board Menu");
+        show("3. Team Menu");
+        show("4. Task Page");
+        show("5. Calendar Menu");
     }
 }

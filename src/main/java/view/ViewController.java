@@ -1,5 +1,7 @@
 package view;
 
+import controller.UserController;
+
 public class ViewController {
     private static Menu next;
 

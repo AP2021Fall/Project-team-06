@@ -13,6 +13,7 @@ public class LoginAndRegisterMenu extends Menu {
 
     public void execute() {
         System.out.println("Login and Register Menu");
+        assignedUser = null;
         ControllerResult result;
         UserController userController = UserController.getController();
 
@@ -40,6 +41,7 @@ public class LoginAndRegisterMenu extends Menu {
                 show(result.message);
                 if (result.success) {
                     ViewController.setNext(new MainMenu(null, this));
+                    assignedUser = userName;
                     break;
                 }
             }

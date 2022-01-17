@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.regex.Pattern;
 
 
 public class Team {
@@ -21,7 +23,6 @@ public class Team {
         this.leader = leader;
         this.members = new ArrayList<User>();
         this.chat = new ArrayList<Notification>();
-        teams.add(this);
     }
 
     private static int assignId() {
@@ -63,16 +64,60 @@ public class Team {
         return null;
     }
 
+    public static Team getPendingByName(String Name) {
+        for(Team team : pendingTeams){
+            if(team.name.equals(Name)){
+                return team;
+            }
+        }
+        return null;
+    }
+
     public static boolean teamExists(String name) {
         return getTeamByName(name) != null;
     }
+
+    public static boolean pendingExists(String name) {
+        return getPendingByName(name) != null;
+    }
 	
-     public static String showTeams(){
-        String output = "teams:";
-        for (int i = 1; i <= teams.size(); i++){
-            output += String.format("\n%d. %s", i, teams.get(i-1).getName());
-        }
-        return output;
+    public static String showTeams(String leaderName){
+        StringBuilder output = new StringBuilder("teams:");
+        for (int i = 1; i <= teams.size(); i++)
+            if (teams.get(i-1).leader.getUsername().equals(leaderName))
+                output.append(String.format("\n%d. %s", i, teams.get(i - 1).getName()));
+
+        return output.toString();
+    }
+
+    public static Team getNthTeam(String leaderName, int n){
+        int m = n;
+        for (int i = 1; i <= teams.size(); i++)
+            if (teams.get(i-1).leader.getUsername().equals(leaderName)) {
+                --m;
+                if (m == 0)
+                    return teams.get(i);
+            }
+
+        return null;
+    }
+
+    public static String showAllTeams(){
+        StringBuilder output = new StringBuilder("teams:");
+        for (int i = 1; i <= teams.size(); i++)
+            output.append(String.format("\n%d. %s", i, teams.get(i - 1).getName()));
+
+        return output.toString();
+    }
+
+    public static boolean isValidTeamName(String teamName) {
+        Pattern pattern1 = Pattern.compile("^\\d.*$");
+        Pattern pattern2 = Pattern.compile("(?=.*\\d)(?=.*[A-Z])([^\\s+])");
+
+        return !pattern1.matcher(teamName).find() &&
+                pattern2.matcher(teamName).find() &&
+                teamName.length() >= 5 &&
+                teamName.length() <= 12;
     }
 
     public static String showPendingTeams() {
@@ -88,6 +133,32 @@ public class Team {
     public static void clearAll() {
         teams.clear();
         pendingTeams.clear();
+    }
+
+    public static void addToPending(Team team) {
+        pendingTeams.add(team);
+    }
+
+    private static void acceptPending(String teamName) {
+        Team team = getPendingByName(teamName);
+        if (team != null)
+            teams.add(team);
+    }
+
+    public static void acceptPending(String[] teamNames) {
+        for (String teamName: teamNames)
+            acceptPending(teamName);
+    }
+
+    private static void rejectPending(String teamName) {
+        Team team = getPendingByName(teamName);
+        if (team != null)
+            pendingTeams.remove(team);
+    }
+
+    public static void rejectPending(String[] teamNames) {
+        for (String teamName: teamNames)
+            rejectPending(teamName);
     }
 
     public String showScoredoard() {
@@ -232,15 +303,19 @@ public class Team {
 
     public String showMember() {
         ArrayList<String> memberName = new ArrayList<>();
-        String stringName = "";
+        StringBuilder stringName = new StringBuilder();
+        stringName.append("Team Name: ").append(name).append("\n");
+        stringName.append("Leader: ").append(leader).append("\n");
+
         for(User user : members){
             memberName.add(user.getUsername());
         }
+
         memberName.sort(Comparator.naturalOrder());
         for(String nameMember : memberName){
-            stringName += nameMember+"\n";
+            stringName.append(nameMember).append("\n");
         }
-        return stringName;
+        return stringName.toString();
     }
 
     public void suspendMember(String username) {
