@@ -53,7 +53,7 @@ public class TeamMenu extends Menu {
                 result = userController.showTask(assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[39])) {
-                result = teamController.showTeams();
+                result = teamController.showTeams(assignedUser);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[40])) {
                 commandMatcher = parse(Command, 40);
@@ -63,7 +63,7 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 41);
 
                 String teamName = commandMatcher.group(1);
-                result = teamController.creatTeam(teamName);
+                result = teamController.creatTeam(teamName,assignedUser);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[42])) {
                 result = teamController.showTeamTasks(assignedTeam);
@@ -74,7 +74,7 @@ public class TeamMenu extends Menu {
                 String taskTitle = commandMatcher.group(1);
                 String startTime = commandMatcher.group(2);
                 String deadline = commandMatcher.group(3);
-                result = teamController.createTaskForTeam(assignedTeam,taskTitle, startTime, deadline);
+                result = teamController.createTaskForTeam(assignedUser,assignedTeam,taskTitle, startTime, deadline);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[44])) {
                 teamController.showTeamMembers(assignedTeam);
@@ -83,25 +83,25 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 45);
 
                 String username = commandMatcher.group(1);
-                result = teamController.addMemberToTeam(assignedUser,assignedTeam);
+                result = teamController.addMemberToTeam(username,assignedUser,assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[46])) {
                 commandMatcher = parse(Command, 46);
 
                 String username = commandMatcher.group(1);
-                result = teamController.deleteTeamMember(username, assignedTeam);
+                result = teamController.deleteTeamMember(username, assignedUser, assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[47])) {
                 commandMatcher = parse(Command, 47);
 
                 String username = commandMatcher.group(1);
-                result = teamController.suspendTeamMember(assignedUser,assignedTeam);
+                result = teamController.suspendTeamMember(username,assignedUser,assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[48])) {
                 commandMatcher = parse(Command, 48);
 
                 String username = commandMatcher.group(1);
-                result = teamController.promoteTeamLeader(assignedTeam,assignedUser);
+                result = teamController.promoteTeamLeader(username,assignedTeam,assignedUser);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[49])) {
                 commandMatcher = parse(Command, 49);
