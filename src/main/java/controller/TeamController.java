@@ -13,7 +13,7 @@ public class TeamController {
     public static TeamController getController() {return controller;}
 
     public ControllerResult creatTeam(String teamName) {
-        User leader = UserController.getController().correntUser;
+        User leader = UserController.correntUser;
         Team team = new Team(teamName, leader);
         User.saveUser();
         return new ControllerResult("team created successfully",true);
@@ -33,14 +33,6 @@ public class TeamController {
         Task task = new Task(taskTitle, createTime, endTime, teamName);
         User.saveUser();
         return new ControllerResult("task created successfully",true);
-    }
-    
-    public ControllerResult addMemberToTeam(String username, String teamName){
-        User user = User.getUserByUsername(username);
-        Team team = Team.getTeamByName(teamName);
-        team.addMember(user);
-        User.saveUser();
-        return new ControllerResult("member add successfully", true);
     }
     
     public ControllerResult promoteTeamLeader(String teamName, String username){

@@ -194,4 +194,7 @@ public class UserController {
         return new ControllerResult("birthday updated successfully",true);
     }
 
+    public void loadUsers() {
+        User.loadUsers();
+    }
 }
