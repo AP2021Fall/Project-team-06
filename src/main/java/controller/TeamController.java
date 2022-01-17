@@ -78,9 +78,9 @@ public class TeamController {
         return new ControllerResult("member add successfully", true);
     }
     
-    public ControllerResult createTaskForTeam(String teamName, String taskTitle,
+    public ControllerResult createTaskForTeam(String assignedUser, String teamName, String taskTitle,
                                              String startTime, String deadline){
-        User user = UserController.correntUser;
+        User user = User.getUserByUsername(assignedUser);
         if(user.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
@@ -90,8 +90,8 @@ public class TeamController {
         return new ControllerResult("task created successfully",true);
     }
     
-    public ControllerResult promoteTeamLeader(String teamName, String username){
-        User userCheck = UserController.correntUser;
+    public ControllerResult promoteTeamLeader(String teamName, String assignedUser, String username){
+        User userCheck = User.getUserByUsername(assignedUser);
         if(userCheck.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
@@ -104,8 +104,8 @@ public class TeamController {
         return new ControllerResult("team leader promoted successfullt", true);
     }
     
-    public ControllerResult suspendTeamMember(String username, String teamName){
-        User userCheck = UserController.correntUser;
+    public ControllerResult suspendTeamMember(String assignedUser, String teamName, String username){
+        User userCheck = User.getUserByUsername(assignedUser);
         if(userCheck.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
@@ -154,25 +154,8 @@ public class TeamController {
     }
 
     @Privileged
-    public ControllerResult promoteTeamMember(String teamName, String username){
-        User userCheck = UserController.getController().correntUser;
-        if(userCheck.getRole() == Role.MEMBER){
-            return new ControllerResult("You do not have access to this section",false);
-        }
-        if(!Team.teamExists(teamName)){
-            return new ControllerResult("team does not exist with this name",false);
-        }
-        Team team = Team.getTeamByName(teamName);
-        if(!team.isMember(username)){
-            return new ControllerResult("this user is not a member of the team",false);
-        }
-        team.promoteMember(username);
-        return new ControllerResult("user promoted successfully",true);
-    }
-
-    @Privileged
-    public ControllerResult deleteTeamMember(String teamName, String username){
-        User userCheck = UserController.getController().correntUser;
+    public ControllerResult deleteTeamMember(String username, String assignedUser, String teamName){
+        User userCheck = User.getUserByUsername(assignedUser);
         if(userCheck.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
@@ -229,45 +212,6 @@ public class TeamController {
         }
         Board board = Board.getBoardByName(teamName, boardName);
         return new ControllerResult("progress done"+board.getTaskPercentDone(board.getTaskByTitle(taskTitle))+"%",true);
-    }
-
-    public ControllerResult changeTeamTaskCategoryInBoard(String teamName, String category, String taskTitle, String boardName){
-        User userCheck = UserController.getController().correntUser;
-        if(userCheck.getRole() == Role.MEMBER){
-            return new ControllerResult("You do not have access to this section",false);
-        }
-        if(!Team.teamExists(teamName)){
-            return new ControllerResult("team does not exist with this name",false);
-        }
-        Team team = Team.getTeamByName(teamName);
-        team.changeTaskCategoryInBoard(category, taskTitle, boardName);
-        return new ControllerResult("category changed successfully",true);
-    }
-
-    public ControllerResult addTeamBoard(String teamName, String boardName){
-        User userCheck = UserController.getController().correntUser;
-        if(userCheck.getRole() == Role.MEMBER){
-            return new ControllerResult("You do not have access to this section",false);
-        }
-        if(!Team.teamExists(teamName)){
-            return new ControllerResult("team does not exist with this name",false);
-        }
-        Team team = Team.getTeamByName(teamName);
-        team.addBoard(boardName);
-        return new ControllerResult("board add successfully",true);
-    }
-    
-    public ControllerResult removeTeamBoard(String teamName, String boardName){
-        User userCheck = UserController.getController().correntUser;
-        if(userCheck.getRole() == Role.MEMBER){
-            return new ControllerResult("You do not have access to this section",false);
-        }
-        if(!Team.teamExists(teamName)){
-            return new ControllerResult("team does not exist with this name",false);
-        }
-        Team team = Team.getTeamByName(teamName);
-        team.removeBoard(boardName);
-        return new ControllerResult("board removed successfully",true);
     }
 
     public ControllerResult checkTeamToken(String username, String teamToken) {
