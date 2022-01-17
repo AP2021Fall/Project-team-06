@@ -58,7 +58,7 @@ public class TeamMenu extends Menu {
                 String taskTitle = commandMatcher.group(1);
                 String startTime = commandMatcher.group(2);
                 String deadline = commandMatcher.group(3);
-                teamController.createTaskForTeam(taskTitle, startTime, deadline);
+                teamController.createTaskForTeam(assignedTeam,taskTitle, startTime, deadline);
                 // createTaskForTeam method should be created
             } else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[44])) {
                 teamController.showTeamMembers(assignedTeam);
