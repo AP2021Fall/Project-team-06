@@ -19,8 +19,10 @@ public class ViewController {
         while (true) {
             if (next != null)
                 gotoNext();
-            else
+            else{
+                UserController.getController().saveUsers();
                 break;
+            }
         }
     }
 }
