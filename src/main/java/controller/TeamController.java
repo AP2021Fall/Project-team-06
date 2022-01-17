@@ -62,12 +62,13 @@ public class TeamController {
         return new ControllerResult("memeber suspend successfully", true);
     }
     
-    public ControllerResult sendNotifications(String message, String senderUser){
-        if(User.getUserByUsername(senderUser).getRole() != Role.ADMIN){
+    public ControllerResult sendNotifications(String message, String senderUser, String teamName){
+        if(User.getUserByUsername(senderUser).getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
         User sender = User.getUserByUsername(senderUser);
-        Team.sendNotification(message, sender);
+        Team team = Team.getTeamByName(teamName);
+        team.sendMessage(sender, message);
         return new ControllerResult("Notifications sended successfully",true);
     }
     
