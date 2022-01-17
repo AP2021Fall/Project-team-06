@@ -1,5 +1,7 @@
 package controller;
 
+import java.time.LocalDateTime;
+
 import model.Board;
 import model.Task;
 import model.Team;
@@ -13,6 +15,7 @@ public class TeamController {
     public ControllerResult creatTeam(String teamName) {
         User leader = UserController.getController().correntUser;
         Team team = new Team(teamName, leader);
+        User.saveUser();
         return new ControllerResult("team created successfully",true);
     }
     
@@ -23,17 +26,44 @@ public class TeamController {
         return new ControllerResult("member add successfully", true);
     }
     
+    public ControllerResult createTaskForTeam(String teamName, String taskTitle,
+                                             String startTime, String deadline){
+        LocalDateTime createTime = LocalDateTime.parse(startTime);
+        LocalDateTime endTime = LocalDateTime.parse(deadline);
+        Task task = new Task(taskTitle, createTime, endTime, teamName);
+        User.saveUser();
+        return new ControllerResult("task created successfully",true);
+    }
+    
+    public ControllerResult addMemberToTeam(String username, String teamName){
+        User user = User.getUserByUsername(username);
+        Team team = Team.getTeamByName(teamName);
+        team.addMember(user);
+        User.saveUser();
+        return new ControllerResult("member add successfully", true);
+    }
+    
     public ControllerResult promoteTeamLeader(String teamName, String username){
         Team team = Team.getTeamByName(teamName);
         User user = User.getUserByUsername(username);
         team.setLeader(user);
+        User.saveUser();
         return new ControllerResult("team leader promoted successfullt", true);
     }
     
     public ControllerResult suspendTeamMember(String username, String teamName){
         Team team = Team.getTeamByName(teamName);
         team.suspendMember(username);
+        User.saveUser();
         return new ControllerResult("memeber suspend successfully", true);
+    }
+    
+    public ControllerResult sendNotifications(String message, String senderUser, String teamName){
+        User sender = User.getUserByUsername(senderUser);
+        Team team = Team.getTeamByName(teamName);
+        team.sendMessage(sender, message);
+        User.saveUser();
+        return new ControllerResult("Notifications sended successfully",true);
     }
     
     public ControllerResult showChatroom(String assignedTeam){
@@ -64,6 +94,7 @@ public class TeamController {
             return new ControllerResult("this user is not a member of the team",false);
         }
         team.promoteMember(username);
+        User.saveUser();
         return new ControllerResult("user promoted successfully",true);
     }
 
@@ -76,6 +107,7 @@ public class TeamController {
             return new ControllerResult("this user is not a member of the team",false);
         }
         team.deleteMember(username);
+        User.saveUser();
         return new ControllerResult("user delete from team successfully",true);
     }
 
@@ -128,6 +160,7 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.changeTaskCategoryInBoard(category, taskTitle, boardName);
+        User.saveUser();
         return new ControllerResult("category changed successfully",true);
     }
 
@@ -137,6 +170,7 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.addBoard(boardName);
+        User.saveUser();
         return new ControllerResult("board add successfully",true);
     }
 
@@ -146,6 +180,7 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.removeBoard(boardName);
+        User.saveUser();
         return new ControllerResult("board removed successfully",true);
     }
 }
