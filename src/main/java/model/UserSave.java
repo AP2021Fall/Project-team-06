@@ -22,7 +22,6 @@ public class UserSave{
             in.close();
             fileIn.close();
         } catch (IOException ex){
-            System.out.println("IOException load error");
             return;
         } catch (ClassNotFoundException ex) {
             return;
