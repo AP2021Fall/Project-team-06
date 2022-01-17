@@ -35,10 +35,6 @@ public class UserController {
         return false;
     }
     
-    public void loadUsers(){
-        User.loadUsers();
-    }
-    
     public static ControllerResult showNotifications(){
         String output = correntUser.showNotifications();
         return new ControllerResult(output, true);
@@ -47,7 +43,6 @@ public class UserController {
     public ControllerResult sendMessage(String assignedTeam, String message){
         Team team = Team.getTeamByName(assignedTeam);
         team.sendMessage(correntUser, message);
-        User.saveUser();
         return new ControllerResult("message send successfully", true);
     }
     
@@ -63,7 +58,6 @@ public class UserController {
         }
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
-        User.saveUser();
         return new ControllerResult("user created successfully", true);
     }
 
@@ -77,7 +71,6 @@ public class UserController {
             return new ControllerResult("invalid password!", false);
         }
         correntUser = user;
-        User.saveUser();
         return new ControllerResult("login successfully", true);
     }
 
@@ -90,7 +83,6 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         User.banUser(user);
-        User.saveUser();
         return new ControllerResult("user banned successfully",true);
     }
 
@@ -102,7 +94,6 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User.changeRole(username, newRole);
-        User.saveUser();
         return new ControllerResult("change role successfully",true);
     }
 
@@ -112,13 +103,11 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         user.changePassword(newPassword);
-        User.saveUser();
         return new ControllerResult("password changed successfully",true);
     }
     
     public ControllerResult changeUsername(String username){
         correntUser.changeUsername(username);
-        User.saveUser();
         return new ControllerResult("username change successfully", true);
     }
 
@@ -157,7 +146,6 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User.changeRole(username, newRole);
-        User.saveUser();
         return new ControllerResult("changed role successfully",true);
     }
 
@@ -168,7 +156,6 @@ public class UserController {
         User user = User.getUserByUsername(username);
         Team team = Team.getTeamById(teamId);
         team.sendMessage(user, message);
-        User.saveUser();
         return new ControllerResult("send message successfully",true);
     }
 
@@ -203,11 +190,14 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         user.setDateOfBrith(LocalDate.parse(date).atStartOfDay());
-        User.saveUser();
         return new ControllerResult("birthday updated successfully",true);
     }
 
     public void loadUsers() {
         User.loadUsers();
+    }
+    
+    public void saveUsers(){
+        User.saveUser();
     }
 }
