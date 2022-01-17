@@ -27,6 +27,7 @@ public class User {
         this.id = assignId();
         this.teams = new ArrayList<>();
         this.usedPassword = new ArrayList<>();
+        this.usedPassword.add(password);
         this.log = new ArrayList<>();
         this.dateOfBirth = null;
         this.role = role;
