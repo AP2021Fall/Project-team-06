@@ -35,6 +35,10 @@ public class UserController {
         return false;
     }
     
+    public void loadUsers(){
+        User.loadUsers();
+    }
+    
     public static ControllerResult showNotifications(){
         String output = correntUser.showNotifications();
         return new ControllerResult(output, true);
