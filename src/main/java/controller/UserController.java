@@ -53,7 +53,10 @@ public class UserController {
         return new ControllerResult(output, true);
     }
     
-    public ControllerResult createUser(String username, String password, String email){
+    public ControllerResult createUser(String username, String password, String password2, String email){
+        if(!password.equals(password2)){
+            return new ControllerResult("These two passwords are not equal",false);
+        }
         Role role = Role.MEMBER;
         User user = new User(username, password, email, role);
         User.saveUser();
