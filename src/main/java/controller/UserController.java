@@ -145,8 +145,10 @@ public class UserController {
         return new ControllerResult(user.showTeams(),true);
     }
 
-    @Privileged
     public ControllerResult setRole(String username, Role newRole){
+        if(correntUser.getRole() == Role.MEMBER){
+            return new ControllerResult("You do not have access to this section",false);
+        }
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
