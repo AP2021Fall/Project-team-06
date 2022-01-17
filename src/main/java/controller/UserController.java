@@ -77,6 +77,7 @@ public class UserController {
         return new ControllerResult("login successfully", true);
     }
 
+    @Privileged
     public ControllerResult banUser(String username) {
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
@@ -87,6 +88,7 @@ public class UserController {
         return new ControllerResult("user banned successfully",true);
     }
 
+    @Privileged
     public ControllerResult changeRole(String username, Role newRole){
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
@@ -139,6 +141,7 @@ public class UserController {
         return new ControllerResult(user.showTeams(),true);
     }
 
+    @Privileged
     public ControllerResult setRole(String username, Role newRole){
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
