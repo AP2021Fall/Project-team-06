@@ -96,7 +96,7 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 46);
 
                 String username = commandMatcher.group(1);
-                result = teamController.deleteTeamMember(username, assignedTeam);
+                result = teamController.deleteTeamMember(username, assignedUser, assignedTeam);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[47])) {
                 commandMatcher = parse(Command, 47);
