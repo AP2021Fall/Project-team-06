@@ -150,7 +150,8 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User user = User.getUserByUsername(username);
-        user.sendMessage(message,teamId);
+        Team team = Team.getTeamById(teamId);
+        team.sendMessage(user, message);
         User.saveUser();
         return new ControllerResult("send message successfully",true);
     }
