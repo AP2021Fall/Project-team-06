@@ -3,6 +3,7 @@ package controller;
 import java.time.LocalDateTime;
 
 import model.Board;
+import model.Role;
 import model.Task;
 import model.Team;
 import model.User;
@@ -19,6 +20,7 @@ public class TeamController {
         return new ControllerResult("team created successfully",true);
     }
     
+    @Privileged
     public ControllerResult addMemberToTeam(String username, String teamName){
         User user = User.getUserByUsername(username);
         Team team = Team.getTeamByName(teamName);
@@ -26,6 +28,7 @@ public class TeamController {
         return new ControllerResult("member add successfully", true);
     }
     
+    @Privileged
     public ControllerResult createTaskForTeam(String teamName, String taskTitle,
                                              String startTime, String deadline){
         LocalDateTime createTime = LocalDateTime.parse(startTime);
@@ -35,6 +38,7 @@ public class TeamController {
         return new ControllerResult("task created successfully",true);
     }
     
+    @Privileged
     public ControllerResult promoteTeamLeader(String teamName, String username){
         Team team = Team.getTeamByName(teamName);
         User user = User.getUserByUsername(username);
@@ -43,6 +47,7 @@ public class TeamController {
         return new ControllerResult("team leader promoted successfullt", true);
     }
     
+    @Privileged
     public ControllerResult suspendTeamMember(String username, String teamName){
         Team team = Team.getTeamByName(teamName);
         team.suspendMember(username);
@@ -64,6 +69,9 @@ public class TeamController {
     }
 
     public ControllerResult showTeams(){
+        if(UserController.correntUser.getRole() != Role.ADMIN){
+            return new ControllerResult("You do not have access to this section", false);
+        }
         return new ControllerResult(Team.showTeams(), true);
     }
 
@@ -77,6 +85,7 @@ public class TeamController {
         return new ControllerResult(team.showRoadmap(),true);
     }
 
+    @Privileged
     public ControllerResult promoteTeamMember(String teamName, String username){
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
@@ -90,6 +99,7 @@ public class TeamController {
         return new ControllerResult("user promoted successfully",true);
     }
 
+    @Privileged
     public ControllerResult deleteTeamMember(String teamName, String username){
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
@@ -146,6 +156,7 @@ public class TeamController {
         return new ControllerResult("progress done"+board.getTaskPercentDone(board.getTaskByTitle(taskTitle))+"%",true);
     }
 
+    @Privileged
     public ControllerResult changeTeamTaskCategoryInBoard(String teamName, String category, String taskTitle, String boardName){
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
@@ -156,6 +167,7 @@ public class TeamController {
         return new ControllerResult("category changed successfully",true);
     }
 
+    @Privileged
     public ControllerResult addTeamBoard(String teamName, String boardName){
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
@@ -166,6 +178,7 @@ public class TeamController {
         return new ControllerResult("board add successfully",true);
     }
 
+    @Privileged
     public ControllerResult removeTeamBoard(String teamName, String boardName){
         if(!Team.teamExists(teamName)){
             return new ControllerResult("team does not exist with this name",false);
