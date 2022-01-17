@@ -8,7 +8,6 @@ import model.User;
 
 public class UserController {
     private static UserController controller = new UserController();
-    public static User correntUser;
 
     public boolean checkLeaderPrivilege(String username) {
         Role userRole = User.getUserByUsername(username).getRole();
@@ -68,7 +67,6 @@ public class UserController {
         if(!user.isValidPassword(password)){
             return new ControllerResult("invalid password!", false);
         }
-        correntUser = user;
         return new ControllerResult("login successfully", true);
     }
 
@@ -125,11 +123,6 @@ public class UserController {
         }
         return true;
     }
-    
-    public ControllerResult changeUsername(String username){
-        correntUser.changeUsername(username);
-        return new ControllerResult("username change successfully", true);
-    }
 
     public ControllerResult showLogs(String username){
         if(!User.userExists(username)){
@@ -156,17 +149,6 @@ public class UserController {
         }
         User user = User.getUserByUsername(username);
         return new ControllerResult(user.showTeams(),true);
-    }
-
-    public ControllerResult setRole(String username, Role newRole){
-        if(correntUser.getRole() == Role.MEMBER){
-            return new ControllerResult("You do not have access to this section",false);
-        }
-        if(!User.userExists(username)){
-            return new ControllerResult("no user exists with username!",false);
-        }
-        User.changeRole(username, newRole);
-        return new ControllerResult("changed role successfully",true);
     }
 
     public ControllerResult sendMessage(String username,String message, int teamId){
