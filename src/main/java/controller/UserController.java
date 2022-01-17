@@ -101,6 +101,9 @@ public class UserController {
             return new ControllerResult("no user exists with username!",false);
         }
         User user = User.getUserByUsername(username);
+        if(user.oldUsedPassword(newPassword)){
+            return new ControllerResult("this password has been userd before",false);
+        }
         user.changePassword(newPassword);
         return new ControllerResult("password changed successfully",true);
     }
