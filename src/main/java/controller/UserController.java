@@ -35,14 +35,10 @@ public class UserController {
         return false;
     }
     
-    public static ControllerResult showNotifications(){
-        String output = correntUser.showNotifications();
-        return new ControllerResult(output, true);
-    }
-    
-    public ControllerResult sendMessage(String assignedTeam, String message){
+    public ControllerResult sendMessags(String assignedTeam, String assignedUser, String message){
         Team team = Team.getTeamByName(assignedTeam);
-        team.sendMessage(correntUser, message);
+        User user = User.getUserByUsername(assignedUser);
+        team.sendMessage(user, message);
         return new ControllerResult("message send successfully", true);
     }
     
