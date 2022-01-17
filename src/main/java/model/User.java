@@ -1,6 +1,5 @@
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -136,8 +135,8 @@ public class User {
 
     public void addScore(int scoreToAdd) { this.score += scoreToAdd; }
 
-    public void setUsername(String Username) {
-        username = Username;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUsername() {
@@ -150,12 +149,13 @@ public class User {
         this.teams.add(team);
     }
 
-    public void setPassword(String Password) {
-        password = Password;
-        usedPassword.add(Password);
+    public void setPassword(String password) {
+        this.password = password;
+        usedPassword.add(password);
     }
-    public void setEmail(String Email) {
-        email = Email;
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean isValidPassword(String Password) {
@@ -167,9 +167,9 @@ public class User {
         usedPassword.add(newPassword);
     }
 
-    public boolean oldUsedPassword(String Password) {
+    public boolean oldUsedPassword(String password) {
         for(String pass : usedPassword){
-            if(pass.equals(Password)){
+            if(pass.equals(password)){
                 return true;
             }
         }
@@ -253,16 +253,16 @@ public class User {
         return false;
     }
 
-    public boolean teamExists(String Name) {
+    public boolean teamExists(String name) {
         for(Team team : teams){
-            if(team.getName().equals(Name)){
+            if(team.getName().equals(name)){
                 return true;
             }
         }
         return false;
     }
     
-    public boolean teamExists(int Id) {
+    public boolean teamExists(int id) {
         for(Team team : teams){
             if(team.getId() == id){
                 return true;
@@ -273,10 +273,6 @@ public class User {
 
     public void setRole(Role newRole) {
         role = newRole;
-    }
-
-    public void sendMessage(String message, int teamId) {
-        ;
     }
 
     public String showCalender() {
