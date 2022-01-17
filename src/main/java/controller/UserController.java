@@ -77,8 +77,10 @@ public class UserController {
         return new ControllerResult("login successfully", true);
     }
 
-    @Privileged
     public ControllerResult banUser(String username) {
+        if(User.getUserByUsername(username).getRole() != Role.ADMIN){
+            return new ControllerResult("You do not have access to this section",false);
+        }
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
@@ -88,14 +90,16 @@ public class UserController {
         return new ControllerResult("user banned successfully",true);
     }
 
-    @Privileged
     public ControllerResult changeRole(String username, Role newRole){
+        if(User.getUserByUsername(username).getRole() != Role.ADMIN){
+            return new ControllerResult("You do not have access to this section",false);
+        }
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);
         }
         User.changeRole(username, newRole);
         User.saveUser();
-    return new ControllerResult("change role successfully",true);
+        return new ControllerResult("change role successfully",true);
     }
 
     public ControllerResult changeUserPassword(String username, String newPassword){
