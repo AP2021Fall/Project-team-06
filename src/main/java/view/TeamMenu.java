@@ -44,7 +44,7 @@ public class TeamMenu extends Menu {
                 commandMatcher = parse(Command, 20);
 
                 String message = commandMatcher.group(1);
-                result = userController.sendMessage(assignedUser, message);
+                result = userController.sendMessags(assignedTeam,assignedUser, message);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[21])) {
                 teamController.showTeamTasks(assignedTeam);
