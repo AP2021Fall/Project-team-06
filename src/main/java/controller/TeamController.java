@@ -16,7 +16,6 @@ public class TeamController {
     public ControllerResult creatTeam(String teamName) {
         User leader = UserController.correntUser;
         Team team = new Team(teamName, leader);
-        User.saveUser();
         return new ControllerResult("team created successfully",true);
     }
     
@@ -27,7 +26,6 @@ public class TeamController {
         }
         User user = User.getUserByUsername(username);
         Team team = Team.getTeamByName(teamName);
-        team.addMember(user);
         return new ControllerResult("member add successfully", true);
     }
     
@@ -40,7 +38,6 @@ public class TeamController {
         LocalDateTime createTime = LocalDateTime.parse(startTime);
         LocalDateTime endTime = LocalDateTime.parse(deadline);
         Task task = new Task(taskTitle, createTime, endTime, teamName);
-        User.saveUser();
         return new ControllerResult("task created successfully",true);
     }
     
@@ -52,7 +49,6 @@ public class TeamController {
         Team team = Team.getTeamByName(teamName);
         User user = User.getUserByUsername(username);
         team.setLeader(user);
-        User.saveUser();
         return new ControllerResult("team leader promoted successfullt", true);
     }
     
@@ -63,7 +59,6 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.suspendMember(username);
-        User.saveUser();
         return new ControllerResult("memeber suspend successfully", true);
     }
     
@@ -73,7 +68,6 @@ public class TeamController {
         }
         User sender = User.getUserByUsername(senderUser);
         Team.sendNotification(message, sender);
-        User.saveUser();
         return new ControllerResult("Notifications sended successfully",true);
     }
     
@@ -112,7 +106,6 @@ public class TeamController {
             return new ControllerResult("this user is not a member of the team",false);
         }
         team.promoteMember(username);
-        User.saveUser();
         return new ControllerResult("user promoted successfully",true);
     }
 
@@ -129,7 +122,6 @@ public class TeamController {
             return new ControllerResult("this user is not a member of the team",false);
         }
         team.deleteMember(username);
-        User.saveUser();
         return new ControllerResult("user delete from team successfully",true);
     }
 
@@ -186,7 +178,6 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.changeTaskCategoryInBoard(category, taskTitle, boardName);
-        User.saveUser();
         return new ControllerResult("category changed successfully",true);
     }
 
@@ -200,7 +191,6 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.addBoard(boardName);
-        User.saveUser();
         return new ControllerResult("board add successfully",true);
     }
     
@@ -214,7 +204,6 @@ public class TeamController {
         }
         Team team = Team.getTeamByName(teamName);
         team.removeBoard(boardName);
-        User.saveUser();
         return new ControllerResult("board removed successfully",true);
     }
 }
