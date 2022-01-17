@@ -60,16 +60,24 @@ public class Team {
     public static boolean teamExists(String name) {
         return getTeamByName(name) != null;
     }
+	
+     public static String showTeams(){
+        String output = "teams:";
+        for (int i = 1; i <= teams.size(); i++){
+            output += String.format("\n%d. %s", i, teams.get(i-1).getName());
+        }
+        return output;
+    }
 
     public static String showPendingTeams() {
-		if (pendingTeams.size() == 0)
-			return "There are no Teams in Pending Status!";
+	if (pendingTeams.size() == 0)
+		return "There are no Teams in Pending Status!";
 
-		String output = "Pending teams:";
-		for (int i = 1; i <= pendingTeams.size(); i++)
-			output += String.format("\n%d. %s", i, pendingTeams.get(i-1).getName());
-		return output;
-	}
+	String output = "Pending teams:";
+	for (int i = 1; i <= pendingTeams.size(); i++)
+		output += String.format("\n%d. %s", i, pendingTeams.get(i-1).getName());
+	return output;
+    }
 
     public static void clearAll() {
         teams.clear();
@@ -180,10 +188,6 @@ public class Team {
         Board.getBoardByName(name, boardName).setTaskCategory(category, taskTitle);
     }
 
-    public void progressTask(String taskTitle, String boardName) {
-        ;
-    }
-
     public String showBoardTaskByCategory(String boardName, String category) {
         Task task = Task.getTaskByTitle(name, category);
         String output = task.getTitle()+": id"+task.getId()+",creation date : ";
@@ -256,8 +260,8 @@ public class Team {
         return name;
     }
 
-    public void setName(String Name) {
-        name = Name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public User getLeader() {
