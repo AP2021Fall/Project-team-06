@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.Role;
+import model.Task;
 import model.Team;
 import model.User;
 import view.LoginAndRegisterMenu;
@@ -31,16 +32,18 @@ public class UserController {
     }
     
     public boolean duplicateEmails(String email){
-        if(User.emailExists(email)){
-            return true;
-        }
-        return false;
+        return User.emailExists(email);
     }
     
-    public ControllerResult showTask(String assignedTeam){
+    public ControllerResult showTask(String assignedTeam, int taskId){
         Team team = Team.getTeamByName(assignedTeam);
-        String output = team.showTasks();
-        return new ControllerResult(output, true);
+        assert team != null;
+        Task task = Task.getTaskById(taskId);
+
+        if (task == null)
+            return new ControllerResult("No task exists with this id!", false);
+
+        return new ControllerResult(task.showTaskMultilined(), true);
     }
     
     public ControllerResult createUser(String username, String password, String password2, String email){

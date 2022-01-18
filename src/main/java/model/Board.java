@@ -62,6 +62,10 @@ public class Board {
         return getBoardByName(teamName, boardName) != null;
     }
 
+    public static void initTeamBoard(String teamName) {
+        teamBoards.put(teamName, new ArrayList<>());
+    }
+
     public Board(String teamName, String name) {
         this.name = name;
         this.teamName = teamName;

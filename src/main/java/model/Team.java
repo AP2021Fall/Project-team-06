@@ -23,6 +23,7 @@ public class Team {
         this.leader = leader;
         this.members = new ArrayList<User>();
         this.chat = new ArrayList<Notification>();
+        Board.initTeamBoard(name);
     }
 
     private static int assignId() {
@@ -141,8 +142,11 @@ public class Team {
 
     private static void acceptPending(String teamName) {
         Team team = getPendingByName(teamName);
-        if (team != null)
+        if (team != null) {
             teams.add(team);
+            team.leader.setRole(Role.LEADER);
+            pendingTeams.remove(team);
+        }
     }
 
     public static void acceptPending(String[] teamNames) {
@@ -163,7 +167,7 @@ public class Team {
 
     public String showScoredoard() {
         int number=1;
-        String strScoreboard = "Rank\tUsername\tScore";
+        StringBuilder strScoreboard = new StringBuilder("Rank\tUsername\tScore");
         HashMap<String,Integer> scoreboard = new HashMap<>();
         ArrayList<String> memberName = new ArrayList<>();
         ArrayList<Integer> score = new ArrayList<>();
@@ -176,38 +180,42 @@ public class Team {
             score.add(scoreboard.get(name));
         }
         score.sort(Comparator.naturalOrder());
-        for(int i=score.size() ; i>0 ; i--){
+        for(int i=score.size()-1 ; i>=0 ; i--){
             for(int j=1 ; j<=memberName.size() ;j++){
-                if(scoreboard.get(name) == score.get(i)){
-                    strScoreboard += number+"\t"+name+"\t"+score.get(i)+"\n";
+                if(scoreboard.get(name).equals(score.get(i))){
+                    strScoreboard.append(number).append("\t").append(name).append("\t").append(score.get(i)).append("\n");
                     number++;
                 }
             }
         }
-        return strScoreboard;
+        return strScoreboard.toString();
     }
 
     public String showRoadmap() {
-        String output = "";
-        ArrayList<Task> allTasks = new ArrayList<>();
+        StringBuilder output = new StringBuilder();
+        ArrayList<Task> allTasks;
+
         for(Board board : Board.getTeamBoards(name)){
             allTasks = board.getTasks();
             for(Task task : allTasks){
-                output += task.getTitle()+" : "+board.getTaskPercentDone(task)+"% done\n";
+                output.append(task.getTitle()).append(" : ").append(board.getTaskPercentDone(task)).append("% done\n");
             }
         }
-        return output;
+
+        if (output.toString().isEmpty())
+            return "no tasks yet";
+        return output.toString();
     }
 
     public String showChatromm() {
         if(chat.size()<1){
             return "no message yet";
         }
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for(Notification notification : chat){
-            output += notification.getSender()+" : "+notification.getMessage();
+            output.append(notification.getSender().getUsername()).append(" : ").append(notification.getMessage());
         }
-        return output;
+        return output.toString();
     }
 
     public String showTasks() {
@@ -305,7 +313,7 @@ public class Team {
         ArrayList<String> memberName = new ArrayList<>();
         StringBuilder stringName = new StringBuilder();
         stringName.append("Team Name: ").append(name).append("\n");
-        stringName.append("Leader: ").append(leader).append("\n");
+        stringName.append("Leader: ").append(leader.getUsername()).append("\n");
 
         for(User user : members){
             memberName.add(user.getUsername());

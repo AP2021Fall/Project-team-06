@@ -71,6 +71,8 @@ public class TeamController {
         User user = User.getUserByUsername(memberUsername);
         if (user == null)
             return new ControllerResult("No user exists with this username!", false);
+        if (user.getRole() != Role.MEMBER)
+            return new ControllerResult("You can't add this user to the team!", false);
 
         Team team = Team.getTeamByName(teamName);
         assert team != null;
@@ -229,5 +231,9 @@ public class TeamController {
             return new ControllerResult("Team not found!", false);
         }
         return new ControllerResult("Team not found!", false);
+    }
+
+    public boolean teamIsSelectable(String teamName) {
+        return Team.teamExists(teamName);
     }
 }

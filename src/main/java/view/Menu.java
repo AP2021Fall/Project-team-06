@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 
 public abstract class Menu {
 	public static final String INVALID_COMMAND = "Invalid command";
-	protected Scanner scanner = new Scanner(System.in);
+	protected static Scanner scanner = new Scanner(System.in);
 	protected Menu parent;
 	protected String name;
 

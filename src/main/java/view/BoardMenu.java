@@ -39,7 +39,7 @@ public class BoardMenu extends Menu {
                 result = boardController.removeBoard(assignedUser, assignedTeam, boardName);
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[25])) {
-                commandMatcher = parse(Command, 2);
+                commandMatcher = parse(Command, 25);
 
                 selectedBoard = commandMatcher.group(1);
             }

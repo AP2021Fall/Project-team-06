@@ -78,8 +78,8 @@ public class Commands {
                     "send --notificaion <notification> --user <username>\n" +
                     "send --notificaion <notification> --team <team name>"),   //Send Notification
             Pattern.compile("show --pendingTeams"),   //Accept New Teams
-            Pattern.compile("accept --teams ([^\\s]+)"),   //Accept New Teams
-            Pattern.compile("reject --teams ([^\\s]+)"),   //Reject Team
+            Pattern.compile("accept --teams (.+)"),   //Accept New Teams
+            Pattern.compile("reject --teams (.+)"),   //Reject Team
 //            BACK and EXIT 59-60
             Pattern.compile("back"),
             Pattern.compile("exit")
