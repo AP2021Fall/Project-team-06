@@ -56,6 +56,14 @@ public class UserController {
             return new ControllerResult("Password power is low",false);
         }
 
+        if (User.emailExists(email)) {
+            return new ControllerResult("User with this email already exists!", false);
+        }
+
+        if (!User.isValidEmail(email)) {
+            return new ControllerResult("Email address is invalid", false);
+        }
+
         Role role = Role.MEMBER;
         new User(username, password, email, role);
         return new ControllerResult("user created successfully", true);

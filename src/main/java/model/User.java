@@ -129,11 +129,18 @@ public class User implements Serializable {
 
     public static boolean emailExists(String email) {
         for(User user : UserSave.getUsers()){
-            if(user.username.equals(email)){
+            if(user.email.equals(email)){
                 return true;
             }
         }
         return false;
+    }
+
+    public static boolean isValidEmail(String email) {
+        String[] tokens = email.split("@");
+        String domain = tokens[tokens.length-1];
+
+        return domain.equals("gmail.com") || domain.equals("yahoo.com");
     }
 
     public static void clearAll() {
