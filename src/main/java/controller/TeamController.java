@@ -1,6 +1,8 @@
 package controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import model.Board;
 import model.Role;
@@ -86,9 +88,26 @@ public class TeamController {
         if(user.getRole() == Role.MEMBER){
             return new ControllerResult("You do not have access to this section",false);
         }
-        LocalDateTime createTime = LocalDateTime.parse(startTime);
-        LocalDateTime endTime = LocalDateTime.parse(deadline);
-        Task task = new Task(taskTitle, createTime, endTime, teamName);
+
+        LocalDateTime createTime;
+        try {
+            LocalDate createDate = LocalDate.parse(startTime);
+            createTime = createDate.atStartOfDay();
+        }
+        catch (DateTimeParseException e) {
+            return new ControllerResult("Invalid start date!",false);
+        }
+
+        LocalDateTime endTime;
+        try {
+            LocalDate deadlineDate = LocalDate.parse(deadline);
+            endTime = deadlineDate.atStartOfDay();
+        }
+        catch (DateTimeParseException e) {
+            return new ControllerResult("Invalid deadline!",false);
+        }
+
+        new Task(taskTitle, createTime, endTime, teamName);
         return new ControllerResult("task created successfully",true);
     }
     

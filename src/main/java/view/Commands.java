@@ -21,7 +21,7 @@ public class Commands {
             Pattern.compile("edit --task --id (\\d+) --title (.*)"),   //change title
             Pattern.compile("edit --task --id (\\d+) --description (.*)"),   //Change Description
             Pattern.compile("edit --task --id (\\d+) --priority ([^\\s]+)"),   //Change Priority
-            Pattern.compile("edit --task --did (\\d+) --Deadline ([^\\s]+)"),   //Change Deadline
+            Pattern.compile("edit --task --id (\\d+) --Deadline ([^\\s]+)"),   //Change Deadline
             Pattern.compile("edit --task --id (\\d+) --assignedUsers ([^\\s]+) --remove"),   //Remove Assigned User
             Pattern.compile("edit --task --id (\\d+) --assignedUsers ([^\\s]+) --add"),   //Add To Assigned Users
 //            Team Menu(TeamMenu) commands: 16-22

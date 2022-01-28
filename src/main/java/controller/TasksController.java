@@ -111,7 +111,7 @@ public class TasksController {
         if (user == null)
             return new ControllerResult(String.format("There is not any user with this username %s!", usernameToRemove), false);
         if (!task.isAssignedToTask(user))
-            return new ControllerResult(String.format("There is not any user with this username %s!", usernameToRemove), false);
+            return new ControllerResult(String.format("There is not any user with username %s in list!", usernameToRemove), false);
         task.removeAssignedUserToTask(user);
         return new ControllerResult(String.format("User %s removed successfully!", usernameToRemove), true);
     }

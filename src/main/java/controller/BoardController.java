@@ -117,11 +117,11 @@ public class BoardController {
         if (!checkLeaderPrivilege(username))
             return new ControllerResult(NO_ACCESS, false);
 
-        if (!Board.boardExists(teamName, boardName))
-            return new ControllerResult("There is no board with this name", false);
-        Board board = Board.getBoardByName(teamName, boardName);
-        if (!board.hasTask(taskId))
-            return new ControllerResult("This task is not on this board!", false);
+//        if (!Board.boardExists(teamName, boardName))
+//            return new ControllerResult("There is no board with this name", false);
+//        Board board = Board.getBoardByName(teamName, boardName);
+//        if (!board.hasTask(taskId))
+//            return new ControllerResult("This task is not on this board!", false);
         Task task = Task.getTaskById(taskId);
         if (task == null)
             return new ControllerResult("Invalid task id!", false);
