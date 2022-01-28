@@ -103,7 +103,7 @@ public class TeamController {
         assert team != null;
 
         team.setLeader(user);
-        return new ControllerResult("team leader promoted successfullt", true);
+        return new ControllerResult("team leader promoted successfully", true);
     }
     
     public ControllerResult suspendTeamMember(String assignedUser, String teamName, String username){
