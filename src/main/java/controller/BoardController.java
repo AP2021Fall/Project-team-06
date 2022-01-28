@@ -108,6 +108,8 @@ public class BoardController {
             return new ControllerResult("The deadline of this task has already passed", false);
         if (!task.hasAssignees())
             return new ControllerResult("Please assign this task to someone first", false);
+
+        board.addTask(task);
         return new ControllerResult("Task added to board successfully!", true);
     }
 

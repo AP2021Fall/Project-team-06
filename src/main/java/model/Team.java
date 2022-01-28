@@ -167,7 +167,7 @@ public class Team {
 
     public String showScoredoard() {
         int number=1;
-        StringBuilder strScoreboard = new StringBuilder("Rank\tUsername\tScore");
+        StringBuilder strScoreboard = new StringBuilder("Rank\tUsername\tScore\n");
         HashMap<String,Integer> scoreboard = new HashMap<>();
         ArrayList<String> memberName = new ArrayList<>();
         ArrayList<Integer> score = new ArrayList<>();
@@ -182,8 +182,8 @@ public class Team {
         score.sort(Comparator.naturalOrder());
         for(int i=score.size()-1 ; i>=0 ; i--){
             for(int j=1 ; j<=memberName.size() ;j++){
-                if(scoreboard.get(name).equals(score.get(i))){
-                    strScoreboard.append(number).append("\t").append(name).append("\t").append(score.get(i)).append("\n");
+                if(scoreboard.get(memberName.get(j-1)).equals(score.get(i))){
+                    strScoreboard.append(number).append("\t").append(memberName.get(j-1)).append("\t").append(score.get(i)).append("\n");
                     number++;
                 }
             }

@@ -103,7 +103,7 @@ public class BoardMenu extends Menu {
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[35])) {
                 commandMatcher = parse(Command, 35);
 
-                boolean showDone = Boolean.parseBoolean(commandMatcher.group(1));
+                boolean showDone = commandMatcher.group(1).equals("done");
                 String boardName = commandMatcher.group(2);
                 result = boardController.showDoneOrFailedTasks(assignedTeam, boardName, showDone);
             }
