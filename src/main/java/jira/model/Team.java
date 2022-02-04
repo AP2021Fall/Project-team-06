@@ -139,6 +139,10 @@ public class Team {
         pendingTeams.add(team);
     }
 
+    public static ArrayList<Team> getPendingTeams() {
+        return pendingTeams;
+    }
+
     private static void acceptPending(String teamName) {
         Team team = getPendingByName(teamName);
         if (team != null) {

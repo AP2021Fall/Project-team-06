@@ -308,4 +308,12 @@ public class TeamController {
         assert team != null;
         return team.getMember();
     }
+
+    public ArrayList<String> getPendingTeams() {
+        ArrayList<String> pendingTeamNames = new ArrayList<>();
+        for (Team team: Team.getPendingTeams())
+            pendingTeamNames.add(team.getName());
+
+        return pendingTeamNames;
+    }
 }
