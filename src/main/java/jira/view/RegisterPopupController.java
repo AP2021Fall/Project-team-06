@@ -1,5 +1,7 @@
 package jira.view;
 
+import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import jira.controller.ControllerResult;
 import jira.controller.UserController;
 import javafx.event.ActionEvent;
@@ -25,12 +27,6 @@ public class RegisterPopupController extends PageController {
     @FXML private PasswordField pass2Field;
     @FXML private TextField emailField;
 
-    @FXML
-    private void initialize() {
-        Stage stage = (Stage) pane.getScene().getWindow();
-        stage.setOnHidden(this::close);
-    }
-
     protected void setLoginPageController(LoginPageController loginPageController) {
         this.loginPageController = loginPageController;
     }
@@ -49,7 +45,8 @@ public class RegisterPopupController extends PageController {
             close(event);
     }
 
-    private void updatePassCheckView(ActionEvent event) {
+    @FXML
+    private void updatePassCheckView(KeyEvent event) {
         String pass1 = getTextFromField(pass1Field);
         String pass2 = getTextFromField(pass2Field);
 
@@ -63,13 +60,13 @@ public class RegisterPopupController extends PageController {
         }
     }
 
-    private void close(ActionEvent event) {
+    protected void close(ActionEvent event) {
         loginPageController.registerReturn();
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
 
-    private void close(WindowEvent event) {
+    protected void close(WindowEvent event) {
         loginPageController.registerReturn();
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();

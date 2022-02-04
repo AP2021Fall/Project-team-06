@@ -3,6 +3,7 @@ package jira.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
 import jira.model.Board;
 import jira.model.Role;
@@ -158,6 +159,33 @@ public class TeamController {
             return new ControllerResult("You do not have access to this section",false);
 
         return new ControllerResult(Team.showTeams(username), true);
+    }
+
+    public ArrayList<String> showTeamsAffiliated(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null) {
+            if (user.getRole() == Role.MEMBER)
+                return showMemberTeams(user);
+            else if (user.getRole() == Role.LEADER)
+                return showLeaderTeams(user);
+        }
+        return null;
+    }
+
+    private ArrayList<String> showLeaderTeams(User user) {
+        ArrayList<String> teamNames = new ArrayList<>();
+        ArrayList<Team> teamsLedByUser = Team.getTeamsLedByUser(user);
+        for (Team team: teamsLedByUser)
+            teamNames.add(team.getName());
+        return teamNames;
+    }
+
+    private ArrayList<String> showMemberTeams(User user) {
+        ArrayList<String> teamNames = new ArrayList<>();
+        ArrayList<Team> teamsUserIsMemberOf = Team.getTeamsUserIsMemberOf(user);
+        for (Team team: teamsUserIsMemberOf)
+            teamNames.add(team.getName());
+        return teamNames;
     }
 
     public ControllerResult showAllTeams() {

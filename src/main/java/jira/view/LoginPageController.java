@@ -1,5 +1,6 @@
 package jira.view;
 
+import javafx.scene.Node;
 import jira.JiraApp;
 import jira.controller.ControllerResult;
 import jira.controller.UserController;
@@ -30,6 +31,9 @@ public class LoginPageController extends PageController {
         ControllerResult result = userController.login(username, password);
 
         showResult(errorField, result);
+
+        if (result.success)
+            gotoMainMenu(event, username);
     }
 
     @FXML
@@ -44,6 +48,7 @@ public class LoginPageController extends PageController {
 
             RegisterPopupController registerPopupController = fxmlLoader.getController();
             registerPopupController.setLoginPageController(this);
+            newStage.setOnHidden(e -> {pane.setDisable(false);});
 
             newStage.show();
         }
@@ -52,23 +57,24 @@ public class LoginPageController extends PageController {
         }
     }
 
-//    private void gotoMainMenu(ActionEvent event, String username) {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(ClassLoader.getSystemResource("mainMenu.fxml"));
-//            Scene scene = new Scene(loader.load());
-//            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//
-//            MainMenuPageController mainMenuPageController = loader.getController();
-//            mainMenuPageController.setCurrentUser(username);
-//            mainMenuPageController.initialize();
-//
-//            stage.setScene(scene);
-//            stage.show();
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void gotoMainMenu(ActionEvent event, String username) {
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("mainMenu.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            MainMenuPageController mainMenuPageController = loader.getController();
+            mainMenuPageController.setCurrentUsername(username);
+            mainMenuPageController.setRole(userController.getUserRole(username).message);
+            mainMenuPageController.initialize();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void registerReturn() {
         pane.setDisable(false);

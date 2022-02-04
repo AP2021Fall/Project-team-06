@@ -1,6 +1,9 @@
 package jira.model;
 
+import javafx.scene.image.Image;
+import jira.JiraApp;
 import jira.controller.UserController;
+import jira.view.PageController;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class User implements Serializable {
+    private static final String PATH_TO_PROFILE_PICS = "profile-pics/";
     private static int idCounter = 0;
     private ArrayList<Team> teams;
     private final int id;
@@ -23,6 +27,8 @@ public class User implements Serializable {
     private int score;
     private ArrayList<LocalDateTime> log;
     private boolean banned;
+    private boolean loggedIn;
+    private Image profiePic;
 
     public User(String username, String password, String email, Role role) {
         this.username = username;
@@ -38,6 +44,10 @@ public class User implements Serializable {
         this.role = role;
         this.score = 0;
         this.banned = false;
+        this.loggedIn = false;
+        this.profiePic = new Image(
+                String.valueOf(JiraApp.class.getResource(PATH_TO_PROFILE_PICS + "default-prof-pic.png"))
+        );
         UserSave.addUser(this);
         usedPassword.add(password);
     }
@@ -327,5 +337,21 @@ public class User implements Serializable {
     public String showTeamTasks(String teamName) {
         Team team = Team.getTeamByName(teamName);
         return team.showTasks();
+    }
+
+    public void setLoggedIn() {
+        this.loggedIn = true;
+    }
+
+    public void clearLoggedIn() {
+        this.loggedIn = false;
+    }
+
+    public Image getProfiePic() {
+        return profiePic;
+    }
+
+    public void setProfilePic(Image profiePic) {
+        this.profiePic = profiePic;
     }
 }

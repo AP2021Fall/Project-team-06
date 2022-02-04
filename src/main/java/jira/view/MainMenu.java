@@ -1,5 +1,7 @@
 package jira.view;
 
+import jira.controller.UserController;
+
 import java.util.regex.Matcher;
 
 public class MainMenu extends Menu {
@@ -44,6 +46,7 @@ public class MainMenu extends Menu {
             }
             else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[59])) {
                 ViewController.setNext(parent);
+                UserController.getController().logout(LoginAndRegisterMenu.assignedUser);
                 break;
             }
             else

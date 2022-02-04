@@ -2,6 +2,7 @@ package jira.controller;
 
 import java.time.LocalDate;
 
+import javafx.scene.image.Image;
 import jira.model.Role;
 import jira.model.Task;
 import jira.model.Team;
@@ -82,7 +83,16 @@ public class UserController {
         }
 
         user.addLog();
+        user.setLoggedIn();
         return new ControllerResult("login successfully", true);
+    }
+
+    public ControllerResult logout(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            user.clearLoggedIn();
+
+        return new ControllerResult("Done", true);
     }
 
     public ControllerResult banUser(String username) {
@@ -249,5 +259,25 @@ public class UserController {
         Team team = Team.getTeamByName(teamName);
         team.sendMessage(user, message);
         return new ControllerResult("send message successfully",true);
+    }
+
+    public ControllerResult getUserRole(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            return new ControllerResult(user.getRole().toString(), true);
+        return new ControllerResult(null, false);
+    }
+
+    public Image getProfilePic(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            return user.getProfiePic();
+        return null;
+    }
+
+    public void setProfilePic(String username, Image newImage) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            user.setProfilePic(newImage);
     }
 }

@@ -164,6 +164,22 @@ public class Team {
             rejectPending(teamName);
     }
 
+    public static ArrayList<Team> getTeamsLedByUser(User user) {
+        ArrayList<Team> teamsLedByUser = new ArrayList<>();
+        for (Team team: teams)
+            if (team.getLeader() == user)
+                teamsLedByUser.add(team);
+        return teamsLedByUser;
+    }
+
+    public static ArrayList<Team> getTeamsUserIsMemberOf(User user) {
+        ArrayList<Team> teamsUserIsMemberOf = new ArrayList<>();
+        for (Team team: teams)
+            if (team.isMember(user))
+                teamsUserIsMemberOf.add(team);
+        return teamsUserIsMemberOf;
+    }
+
     public String showScoredoard() {
         int number=1;
         StringBuilder strScoreboard = new StringBuilder("Rank\tUsername\tScore\n");
@@ -367,6 +383,13 @@ public class Team {
     public boolean isMember(String username) {
         for (User member: members)
             if (member.getUsername().equals(username))
+                return true;
+        return false;
+    }
+
+    public boolean isMember(User user) {
+        for (User member: members)
+            if (member.getUsername().equals(user.getUsername()))
                 return true;
         return false;
     }

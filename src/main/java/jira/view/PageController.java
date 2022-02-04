@@ -1,6 +1,7 @@
 package jira.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.shape.Circle;
 import jira.JiraApp;
 import jira.controller.ControllerResult;
 import javafx.scene.control.Label;
@@ -11,8 +12,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
 public abstract class PageController {
-    protected static final String PATH_TO_PHOTOS = "/photos/";
-    protected static final String PATH_TO_ICONS = "/icons/";
+    public static final String PATH_TO_PHOTOS = "photos/";
+    public static final String PATH_TO_ICONS = "icons/";
+    public static final String PATH_TO_GIFS = "gifs/";
 
     @FXML
     private void setErrorLabel(Label errorLabel, String error) {
@@ -47,5 +49,23 @@ public abstract class PageController {
 
     protected void clearIcon(ImageView imageView) {
         imageView.setImage(null);
+    }
+
+    protected void setProfPic(ImageView imageView, String pathToProfPic) {
+        imageView.setImage(new Image(String.valueOf(JiraApp.class.getResource(PATH_TO_PHOTOS + pathToProfPic))));
+        Circle clip = new Circle(imageView.getFitWidth()/2, imageView.getFitHeight()/2, 30);
+        imageView.setClip(clip);
+    }
+
+    protected void setProfPic(ImageView imageView, Image image) {
+        imageView.setImage(image);
+        Circle clip = new Circle(imageView.getFitWidth()/2, imageView.getFitHeight()/2, 30);
+        imageView.setClip(clip);
+    }
+
+    protected void setGif(ImageView imageView, String pathToGif) {
+        imageView.setImage(new Image(String.valueOf(JiraApp.class.getResource(PATH_TO_GIFS + pathToGif))));
+        Circle clip = new Circle(imageView.getFitWidth()/2, imageView.getFitHeight()/2, 30);
+        imageView.setClip(clip);
     }
 }
