@@ -1,7 +1,6 @@
 package controller;
 
-import model.*;
-
+import jira.model.*;
 import java.time.LocalDateTime;
 
 public abstract class Initializer {
