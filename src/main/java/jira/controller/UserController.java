@@ -280,4 +280,18 @@ public class UserController {
         if (user != null)
             user.setProfilePic(newImage);
     }
+
+    public int getScore(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            return user.getScore();
+        throw new RuntimeException("WHAT?");
+    }
+
+    public boolean isOnline(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null)
+            return user.loggedIn();
+        throw new RuntimeException("WHAT?");
+    }
 }

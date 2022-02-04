@@ -172,6 +172,25 @@ public class TeamController {
         return null;
     }
 
+    public ArrayList<Integer> getAffiliatedTeamsMemberCount(String username) {
+        User user = User.getUserByUsername(username);
+        if (user != null) {
+            if (user.getRole() == Role.MEMBER)
+                return getMemberCountOfTeams(Team.getTeamsUserIsMemberOf(user));
+            else if (user.getRole() == Role.LEADER)
+                return getMemberCountOfTeams(Team.getTeamsLedByUser(user));
+        }
+
+        return null;
+    }
+
+    private ArrayList<Integer> getMemberCountOfTeams(ArrayList<Team> teams) {
+        ArrayList<Integer> memberCounts = new ArrayList<>();
+        for (Team team: teams)
+            memberCounts.add(team.getMember().size());
+        return memberCounts;
+    }
+
     private ArrayList<String> showLeaderTeams(User user) {
         ArrayList<String> teamNames = new ArrayList<>();
         ArrayList<Team> teamsLedByUser = Team.getTeamsLedByUser(user);

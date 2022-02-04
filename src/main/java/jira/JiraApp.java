@@ -19,12 +19,6 @@ public class JiraApp extends Application {
         UserSave.init();
     }
 
-//    public static void main(String[] args) throws IOException {
-//        setup();
-//        System.out.println("Welcome to JIRA!");
-//        ViewController.run();
-//    }
-
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("login.fxml"));

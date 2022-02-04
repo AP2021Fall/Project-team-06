@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+
+<BorderPane fx:controller="jira.view.TeamMenuPageController" fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <TableView fx:id="listOfTeams" layoutX="132.0" layoutY="100.0" prefHeight="200.0" prefWidth="321.0">
+              <columns>
+                <TableColumn prefWidth="212.79998779296875" text="Team Name" />
+                <TableColumn minWidth="0.0" prefWidth="108.800048828125" text="Members" />
+              </columns>
+            </TableView>
+            <Label fx:id="leaderOrMemberLabel" layoutX="191.0" layoutY="60.0" prefHeight="18.0" prefWidth="202.0" />
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

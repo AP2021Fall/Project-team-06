@@ -347,6 +347,10 @@ public class User implements Serializable {
         this.loggedIn = false;
     }
 
+    public boolean loggedIn() {
+        return loggedIn;
+    }
+
     public Image getProfiePic() {
         return profiePic;
     }
