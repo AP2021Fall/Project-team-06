@@ -302,4 +302,10 @@ public class TeamController {
     public boolean teamIsSelectable(String teamName) {
         return Team.teamExists(teamName);
     }
+
+    public ArrayList<String> getMemberData(String teamName) {
+        Team team = Team.getTeamByName(teamName);
+        assert team != null;
+        return team.getMember();
+    }
 }

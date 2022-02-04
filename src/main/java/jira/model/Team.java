@@ -393,4 +393,15 @@ public class Team {
                 return true;
         return false;
     }
+
+    public ArrayList<String[]> getMemberData() {
+        ArrayList<String[]> memberData = new ArrayList<>();
+        for (User member: members)
+            memberData.add(new String[] {
+                    member.getUsername(),
+                    Integer.toString(member.getScore()),
+                    Boolean.toString(member.loggedIn())
+            });
+        return memberData;
+    }
 }
