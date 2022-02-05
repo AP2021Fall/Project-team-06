@@ -31,9 +31,14 @@ public class LoginPageController extends PageController {
         ControllerResult result = userController.login(username, password);
 
         showResult(errorField, result);
+        String role = userController.getUserRole(username).message;
 
-        if (result.success)
-            gotoMainMenu(event, username);
+        if (result.success) {
+            if (role.equals("System Administrator"))
+                gotoAdminMenu(event, username);
+            else
+                gotoMainMenu(event, username, role);
+        }
     }
 
     @FXML
@@ -57,7 +62,7 @@ public class LoginPageController extends PageController {
         }
     }
 
-    private void gotoMainMenu(ActionEvent event, String username) {
+    private void gotoMainMenu(ActionEvent event, String username, String role) {
         try {
             FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("mainMenu.fxml"));
             Scene scene = new Scene(loader.load());
@@ -65,8 +70,26 @@ public class LoginPageController extends PageController {
 
             MainMenuPageController mainMenuPageController = loader.getController();
             mainMenuPageController.setCurrentUsername(username);
-            mainMenuPageController.setRole(userController.getUserRole(username).message);
+            mainMenuPageController.setRole(role);
             mainMenuPageController.initialize();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void gotoAdminMenu(ActionEvent event, String username) {
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("adminPannel.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            AdminPanelPageController adminPanelPageController = loader.getController();
+            adminPanelPageController.setCurrentUsername(username);
+            adminPanelPageController.initialize();
 
             stage.setScene(scene);
             stage.show();
@@ -79,47 +102,4 @@ public class LoginPageController extends PageController {
     protected void registerReturn() {
         pane.setDisable(false);
     }
-
-//    public void execute() {
-//        System.out.println("Login and Register Menu");
-//        assignedUser = null;
-//        ControllerResult result;
-//        UserController userController = UserController.getController();
-//
-//        while (true) {
-//            Matcher commandMatcher;
-//            Command = getInput();
-//            if (isValidCommand(Command, Commands.COMMAND_PATTERNS[0])) {
-//                commandMatcher = parse(Command, 0);
-//
-//                String userName = commandMatcher.group(1);
-//                String passWord1 = commandMatcher.group(2);
-//                String passWord2 = commandMatcher.group(3);
-//                String email = commandMatcher.group(4);
-//                result = userController.createUser(userName, passWord1, passWord2, email);
-//
-//                show(result.message);
-//            }
-//            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[1])){
-//                commandMatcher = parse(Command, 1);
-//
-//                String userName = commandMatcher.group(1);
-//                String password = commandMatcher.group(2);
-//                result = userController.login(userName, password);
-//
-//                show(result.message);
-//                if (result.success) {
-//                    ViewController.setNext(new MainMenu(null, this));
-//                    assignedUser = userName;
-//                    break;
-//                }
-//            }
-//            else if (isValidCommand(Command, Commands.COMMAND_PATTERNS[60])){
-//                ViewController.setNext(null);
-//                break;
-//            }
-//            else
-//                show(INVALID_COMMAND);
-//        }
-//    }
 }
