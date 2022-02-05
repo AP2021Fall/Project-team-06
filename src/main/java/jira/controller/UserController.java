@@ -7,7 +7,6 @@ import jira.model.Role;
 import jira.model.Task;
 import jira.model.Team;
 import jira.model.User;
-import jira.view.LoginAndRegisterMenu;
 
 public class UserController {
     private static UserController controller = new UserController();
@@ -247,10 +246,6 @@ public class UserController {
         User.saveUser();
     }
 
-    public void updateAssignedUser(String username) {
-        LoginAndRegisterMenu.assignedUser = username;
-    }
-    
     public ControllerResult sendMessage(String username,String message, String teamName){
         if(!User.userExists(username)){
             return new ControllerResult("no user exists with username!",false);

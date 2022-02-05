@@ -30,7 +30,7 @@ public class AdminPanelPageController extends PageController {
         this.currentUsername = currentUsername;
     }
 
-    public void initialize() {
+    public void setup() {
         clearTable();
         setAdminUsernameLabel();
         populatePendingTeamsTableView();
@@ -47,7 +47,7 @@ public class AdminPanelPageController extends PageController {
 
     private void populatePendingTeamsTableView() {
         ArrayList<String> pendingTeamNames = TeamController.getController().getPendingTeams();
-
+        System.out.println(pendingTeamNames.toString());
         pendingTeamsTableView.setEditable(true);
         TableColumn pendingTeamName = new TableColumn("Team Name");
         pendingTeamName.setCellFactory(new PropertyValueFactory("pendingTeamName"));
@@ -112,12 +112,12 @@ public class AdminPanelPageController extends PageController {
 
         private void doReject(ActionEvent event) {
             TeamController.getController().rejectPendingTeam(currentUsername, pendingTeamName);
-            initialize();
+            setup();
         }
 
         private void doAccept(ActionEvent event) {
             TeamController.getController().acceptPendingTeam(currentUsername, pendingTeamName);
-            initialize();
+            setup();
         }
 
         public String getPendingTeamName() {

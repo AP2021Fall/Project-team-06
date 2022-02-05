@@ -98,7 +98,8 @@ public class User implements Serializable {
     
     public void changeUsername(String username){
         this.username = username;
-        UserController.getController().updateAssignedUser(username);
+//        UserController.getController().updateAssignedUser(username);
+        throw new RuntimeException("NOT WORKING!");
     }
 
     public static User getUserByUsername(String username) {

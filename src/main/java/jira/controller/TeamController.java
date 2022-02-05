@@ -161,6 +161,12 @@ public class TeamController {
         return new ControllerResult(Team.showTeams(username), true);
     }
 
+    /**
+     * Lists the name of teams that the user is either the leader
+     * or a member.
+     * @param username Username of the one to check
+     * @return List of team names
+     */
     public ArrayList<String> showTeamsAffiliated(String username) {
         User user = User.getUserByUsername(username);
         if (user != null) {

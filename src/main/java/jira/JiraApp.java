@@ -13,6 +13,7 @@ import java.io.IOException;
 public class JiraApp extends Application {
     private static void setup() {
         new User("admin", "Password123", "admin@gmail.com", Role.ADMIN);
+        new User("test", "Password123", "test@gmail.com", Role.MEMBER);
     }
 
     static {

@@ -13,6 +13,7 @@ import javafx.util.Callback;
 import jira.controller.ControllerResult;
 import jira.controller.TeamController;
 import jira.controller.UserController;
+import jira.model.Role;
 
 import java.util.ArrayList;
 
@@ -136,7 +137,7 @@ public class TeamViewPopupController extends PageController {
             this.deleteButton = new Button();
             this.deleteButton.setOnAction(event -> deleteUser(username));
 
-            if (!currentRole.equals("Team Leader"))
+            if (!currentRole.equals(Role.LEADER.toString()))
                 deleteButton.setDisable(true);
         }
 

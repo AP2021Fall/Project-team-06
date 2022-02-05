@@ -2,21 +2,22 @@ package jira.view;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jira.JiraApp;
+import jira.controller.ControllerResult;
 import jira.controller.TeamController;
+import jira.controller.UserController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,8 +27,10 @@ public class TeamMenuPageController extends PageController {
     private String currentRole;
 
     @FXML private BorderPane pane;
-    @FXML private TableView listOfTeams;
+    @FXML private TableView<TeamStats> listOfTeams;
     @FXML private Label leaderOrMemberLabel;
+    @FXML private TextField teamNameField;
+    @FXML private TextArea errorField;
 
     protected void setCurrentUsername(String currentUsername) {
         this.currentUsername = currentUsername;
@@ -41,7 +44,7 @@ public class TeamMenuPageController extends PageController {
         leaderOrMemberLabel.setText(currentRole + " of:");
     }
 
-    public void initialize() {
+    public void setup() {
         setLeaderOrMemberLabel();
         clearTeamListView();
         prepareTeamListView();
@@ -67,7 +70,6 @@ public class TeamMenuPageController extends PageController {
 
     private ObservableList<TeamStats> getTeamListViewItems() {
         final ObservableList<TeamStats> teamStats = FXCollections.observableArrayList();
-
         ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
         ArrayList<Integer> teamCounts = TeamController.getController().getAffiliatedTeamsMemberCount(currentUsername);
         for (int i = 0; i < teamNames.size(); i++) {
@@ -115,6 +117,39 @@ public class TeamMenuPageController extends PageController {
 
     protected void teamViewReturn() {
         pane.setDisable(false);
+    }
+
+    @FXML
+    private void createTeam(ActionEvent event) {
+        String teamName = getTextFromField(teamNameField);
+        ControllerResult result = TeamController.getController().creatTeam(currentUsername, teamName);
+        showResult(errorField, result);
+    }
+
+    @FXML
+    private void back(ActionEvent event) {
+        gotoMainMenu(event);
+        currentUsername = null;
+        currentRole = null;
+    }
+
+    private void gotoMainMenu(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("mainMenu.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            MainMenuPageController mainMenuPageController = loader.getController();
+            mainMenuPageController.setCurrentUsername(currentUsername);
+            mainMenuPageController.setRole(currentRole);
+            mainMenuPageController.setup();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     class GotoTeamHandler implements EventHandler<MouseEvent> {

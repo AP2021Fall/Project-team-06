@@ -1,6 +1,7 @@
 package jira.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import jira.JiraApp;
 import jira.controller.ControllerResult;
@@ -28,11 +29,30 @@ public abstract class PageController {
         label.setTextFill(Paint.valueOf("#000000"));
     }
 
+    @FXML
+    private void setInfoLabel(TextArea area, String info) {
+        area.setText(info);
+        area.setStyle("-fx-text-fill: #000000");
+    }
+
+    @FXML
+    private void setErrorLabel(TextArea area, String info) {
+        area.setText(info);
+        area.setStyle("-fx-text-fill: #E74C3C");
+    }
+
     protected void showResult(Label label, ControllerResult result) {
         if (result.success)
             setInfoLabel(label, result.message);
         else
             setErrorLabel(label, result.message);
+    }
+
+    protected void showResult(TextArea area, ControllerResult result) {
+        if (result.success)
+            setInfoLabel(area, result.message);
+        else
+            setErrorLabel(area, result.message);
     }
 
     protected String getTextFromField(TextField field) {

@@ -7,22 +7,29 @@ import java.util.regex.Pattern;
 
 
 public class Team {
-    private static ArrayList<Team> teams = new ArrayList<>();
-    private static ArrayList<Team> pendingTeams = new ArrayList<>();
+    private static final ArrayList<Team> teams = new ArrayList<>();
+    private static final ArrayList<Team> pendingTeams = new ArrayList<>();
     private static int idCounter = 0;
     private final int id;
     private String name;
     private User leader;
-    private ArrayList<User> members;
-    private ArrayList<Notification> chat;
+    private final ArrayList<User> members;
+    private final ArrayList<Notification> chat;
 
     public Team(String name, User leader) {
         this.id = assignId();
         this.name = name;
         this.leader = leader;
-        this.members = new ArrayList<User>();
-        this.chat = new ArrayList<Notification>();
+        this.members = new ArrayList<>();
+        this.chat = new ArrayList<>();
         Board.initTeamBoard(name);
+        removeNewLeaderMemberTeams(leader);
+    }
+
+    private void removeNewLeaderMemberTeams(User user) {
+        for (Team team: teams)
+            if (team.isMember(user))
+                team.deleteMember(user);
     }
 
     private static int assignId() {
@@ -241,22 +248,22 @@ public class Team {
         if(Board.getTeamBoards(name).size()<1){
             return "no task yet";
         }
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int i=1;
         ArrayList<Task> allTasks;
         for(Board board : Board.getTeamBoards(name)){
             allTasks = board.getTasks();
             for(Task task : allTasks){
-                output += i+"."+task.getTitle()+": id "+task.getId()+",creation date : "+task.getCreationDate();
-                output += ",deadline :"+task.getDeadline()+",assign to :";
+                output.append(i).append(".").append(task.getTitle()).append(": id ").append(task.getId()).append(",creation date : ").append(task.getCreationDate());
+                output.append(",deadline :").append(task.getDeadline()).append(",assign to :");
                 i++;
                 for(User user : task.getAssignedUsers().keySet()){
-                    output += user.getUsername()+" ";
+                    output.append(user.getUsername()).append(" ");
                 }
-                output += ",priority :"+task.getPriority().toString()+"\n";
+                output.append(",priority :").append(task.getPriority().toString()).append("\n");
             }
         }
-        return output;
+        return output.toString();
     }
 
     public void addBoard(String boardName) {
@@ -294,13 +301,13 @@ public class Team {
 
     public String showBoardTaskByCategory(String boardName, String category) {
         Task task = Task.getTaskByTitle(name, category);
-        String output = task.getTitle()+": id"+task.getId()+",creation date : ";
-        output += task.getCreationDate()+",deadline :"+task.getDeadline()+",assign to :";
+        StringBuilder output = new StringBuilder(task.getTitle() + ": id" + task.getId() + ",creation date : ");
+        output.append(task.getCreationDate()).append(",deadline :").append(task.getDeadline()).append(",assign to :");
         for(User user : task.getAssignedUsers().keySet()){
-            output += user.getUsername()+" ";
+            output.append(user.getUsername()).append(" ");
         }
-        output += ",priority :"+task.getPriority().toString();
-        return output;
+        output.append(",priority :").append(task.getPriority().toString());
+        return output.toString();
     }
 
     public String showBoard(String boardName) {
@@ -310,13 +317,13 @@ public class Team {
 
     public String showTask(int id) {
         Task task = Task.getTaskById(id);
-        String output = task.getTitle()+": id"+task.getId()+",creation date : ";
-        output += task.getCreationDate()+",deadline :"+task.getDeadline()+",assign to :";
+        StringBuilder output = new StringBuilder(task.getTitle() + ": id" + task.getId() + ",creation date : ");
+        output.append(task.getCreationDate()).append(",deadline :").append(task.getDeadline()).append(",assign to :");
         for(User user : task.getAssignedUsers().keySet()){
-            output += user.getUsername()+" ";
+            output.append(user.getUsername()).append(" ");
         }
-        output += ",priority :"+task.getPriority().toString();
-        return output;
+        output.append(",priority :").append(task.getPriority().toString());
+        return output.toString();
     }
 
     public ArrayList<String> getMember() {
@@ -352,6 +359,10 @@ public class Team {
 
     public void deleteMember(String username) {
         members.remove(User.getUserByUsername(username));
+    }
+
+    public void deleteMember(User user) {
+        members.remove(user);
     }
 
     public void promoteMember(String username) {

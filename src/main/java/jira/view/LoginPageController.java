@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jira.model.Role;
 
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ public class LoginPageController extends PageController {
         String role = userController.getUserRole(username).message;
 
         if (result.success) {
-            if (role.equals("System Administrator"))
+            if (role.equals(Role.ADMIN.toString()))
                 gotoAdminMenu(event, username);
             else
                 gotoMainMenu(event, username, role);
@@ -71,7 +72,7 @@ public class LoginPageController extends PageController {
             MainMenuPageController mainMenuPageController = loader.getController();
             mainMenuPageController.setCurrentUsername(username);
             mainMenuPageController.setRole(role);
-            mainMenuPageController.initialize();
+            mainMenuPageController.setup();
 
             stage.setScene(scene);
             stage.show();
@@ -89,8 +90,7 @@ public class LoginPageController extends PageController {
 
             AdminPanelPageController adminPanelPageController = loader.getController();
             adminPanelPageController.setCurrentUsername(username);
-            adminPanelPageController.initialize();
-
+            adminPanelPageController.setup();
             stage.setScene(scene);
             stage.show();
         }

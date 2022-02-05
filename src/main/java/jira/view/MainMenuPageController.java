@@ -36,7 +36,7 @@ public class MainMenuPageController extends PageController {
     @FXML private TableView<String> currentUserTeams;
     @FXML private Label leaderOrMemberLabel;
 
-    protected void initialize() {
+    protected void setup() {
         setCurrentUsernameLabel();
         setLeaderOrMemberLabel();
         setCurrentUserProfilePic();
@@ -51,7 +51,22 @@ public class MainMenuPageController extends PageController {
 
     @FXML
     private void gotoTeamMenu(ActionEvent event) {
-        System.out.println("to team");
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("teamMenu.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            TeamMenuPageController teamMenuPageController = loader.getController();
+            teamMenuPageController.setCurrentRole(role);
+            teamMenuPageController.setCurrentUsername(currentUsername);
+            teamMenuPageController.setup();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
