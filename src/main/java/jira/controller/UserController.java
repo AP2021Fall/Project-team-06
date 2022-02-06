@@ -266,32 +266,35 @@ public class UserController {
 
     public Image getProfilePic(String username) {
         User user = User.getUserByUsername(username);
-        if (user != null)
-            return user.getProfiePic();
-        return null;
+        assert user != null;
+        return user.getProfiePic();
     }
 
     public void setProfilePic(String username, Image newImage) {
         User user = User.getUserByUsername(username);
-        if (user != null)
-            user.setProfilePic(newImage);
+        assert user != null;
+        user.setProfilePic(newImage);
     }
 
     public int getScore(String username) {
         User user = User.getUserByUsername(username);
-        if (user != null)
-            return user.getScore();
-        throw new RuntimeException("WHAT?");
+        assert user != null;
+        return user.getScore();
     }
 
     public boolean isOnline(String username) {
         User user = User.getUserByUsername(username);
-        if (user != null)
-            return user.loggedIn();
-        throw new RuntimeException("WHAT?");
+        assert user != null;
+        return user.loggedIn();
     }
 
     public ArrayList<String> getAllUsernames() {
         return User.getAllUsernames();
+    }
+
+    public String getEmail(String currentUsername) {
+        User user = User.getUserByUsername(currentUsername);
+        assert user != null;
+        return user.getEmail();
     }
 }

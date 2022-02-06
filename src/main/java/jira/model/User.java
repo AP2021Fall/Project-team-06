@@ -186,6 +186,10 @@ public class User implements Serializable {
         return username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public ArrayList<Team> getTeams() { return teams; }
 
     public void addToTeams(Team team) {

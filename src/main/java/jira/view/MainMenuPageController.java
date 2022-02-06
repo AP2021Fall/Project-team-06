@@ -50,7 +50,23 @@ public class MainMenuPageController extends PageController {
 
     @FXML
     private void gotoProfileMenu(ActionEvent event) {
-        System.out.println("to profile");
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("profileMenu.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            ProfilePageController profilePageController = loader.getController();
+            profilePageController.setCurrentRole(role);
+            profilePageController.setCurrentUsername(currentUsername);
+            profilePageController.setCurrentUserProfilePic(profilePicView.getImage());
+            profilePageController.setup();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
