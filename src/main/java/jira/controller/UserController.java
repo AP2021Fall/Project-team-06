@@ -1,6 +1,7 @@
 package jira.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import javafx.scene.image.Image;
 import jira.model.Role;
@@ -288,5 +289,9 @@ public class UserController {
         if (user != null)
             return user.loggedIn();
         throw new RuntimeException("WHAT?");
+    }
+
+    public ArrayList<String> getAllUsernames() {
+        return User.getAllUsernames();
     }
 }

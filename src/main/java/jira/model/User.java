@@ -2,9 +2,6 @@ package jira.model;
 
 import javafx.scene.image.Image;
 import jira.JiraApp;
-import jira.controller.UserController;
-import jira.view.PageController;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +26,14 @@ public class User implements Serializable {
     private boolean banned;
     private boolean loggedIn;
     private Image profiePic;
+
+    public static ArrayList<String> getAllUsernames() {
+        ArrayList<String> usernames = new ArrayList<>();
+        for (User user: UserSave.getUsers())
+            if (user.getRole() != Role.ADMIN)
+                usernames.add(user.getUsername());
+        return usernames;
+    }
 
     public User(String username, String password, String email, Role role) {
         this.username = username;

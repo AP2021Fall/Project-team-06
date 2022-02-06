@@ -75,7 +75,7 @@ public class TeamMenuPageController extends PageController {
         for (int i = 0; i < teamNames.size(); i++) {
             teamStats.add(new TeamStats(teamNames.get(i), teamCounts.get(i)));
         }
-
+        System.out.println(teamStats.size());
         return teamStats;
     }
 

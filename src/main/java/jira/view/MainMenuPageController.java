@@ -1,12 +1,16 @@
 package jira.view;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -97,9 +101,13 @@ public class MainMenuPageController extends PageController {
     }
 
     private void setCurrentUserTeams() {
+        TableColumn<String, String> teamNamesColumn = new TableColumn<>("Team Name");
+        teamNamesColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
+
+        currentUserTeams.getColumns().add(teamNamesColumn);
         ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
-        for (String teamName: teamNames)
-            currentUserTeams.getItems().add(teamName);
+        ObservableList<String> rows = FXCollections.observableArrayList(teamNames);
+        currentUserTeams.setItems(rows);
     }
 
     protected void setCurrentUsername(String currentUsername) {

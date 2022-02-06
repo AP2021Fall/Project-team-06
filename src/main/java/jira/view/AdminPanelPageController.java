@@ -1,5 +1,6 @@
 package jira.view;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,9 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import jira.JiraApp;
 import jira.controller.TeamController;
 import jira.controller.UserController;
@@ -23,7 +24,7 @@ public class AdminPanelPageController extends PageController {
 
     @FXML private BorderPane pane;
     @FXML private Label adminUsernameLabel;
-    @FXML private TableView<PendingTeamRow> pendingTeamsTableView;
+    @FXML private TableView<String> pendingTeamsTableView;
     @FXML private TableView<String> usersTableView;
 
     protected void setCurrentUsername(String currentUsername) {
@@ -34,6 +35,7 @@ public class AdminPanelPageController extends PageController {
         clearTable();
         setAdminUsernameLabel();
         populatePendingTeamsTableView();
+        populateUsersTableView();
     }
 
     private void setAdminUsernameLabel() {
@@ -43,24 +45,103 @@ public class AdminPanelPageController extends PageController {
     private void clearTable() {
         pendingTeamsTableView.getItems().clear();
         pendingTeamsTableView.getColumns().clear();
+        usersTableView.getItems().clear();
+        usersTableView.getColumns().clear();
+    }
+
+    private void populateUsersTableView() {
+        ArrayList<String> userNames = UserController.getController().getAllUsernames();
+        TableColumn<String, String> username = new TableColumn<>("Username");
+        username.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
+
+        usersTableView.getColumns().add(username);
+        ObservableList<String> rows = FXCollections.observableArrayList(userNames);
+        usersTableView.setItems(rows);
     }
 
     private void populatePendingTeamsTableView() {
         ArrayList<String> pendingTeamNames = TeamController.getController().getPendingTeams();
-        System.out.println(pendingTeamNames.toString());
         pendingTeamsTableView.setEditable(true);
-        TableColumn pendingTeamName = new TableColumn("Team Name");
-        pendingTeamName.setCellFactory(new PropertyValueFactory("pendingTeamName"));
-        TableColumn rejectButton = new TableColumn("");
-        rejectButton.setCellFactory(new PropertyValueFactory("rejectTeamButton"));
-        TableColumn acceptButton = new TableColumn("");
-        acceptButton.setCellFactory(new PropertyValueFactory("acceptTeamButton"));
 
-        ObservableList<PendingTeamRow> rows = FXCollections.observableArrayList();
-        for (int i = 0; i < pendingTeamNames.size(); i++)
-            rows.add(new PendingTeamRow(pendingTeamNames.get(i), i));
+        TableColumn<String, String> pendingTeamName = new TableColumn<>("Team Name");
+        pendingTeamName.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
 
+        pendingTeamsTableView.getColumns().add(pendingTeamName);
+        addAcceptButtonToTable();
+        addRejectButtonToTable();
+
+        ObservableList<String> rows = FXCollections.observableArrayList(pendingTeamNames);
         pendingTeamsTableView.setItems(rows);
+    }
+
+    private void addRejectButtonToTable() {
+        TableColumn<String, Void> columnButtonReject = new TableColumn<>("");
+        Callback<TableColumn<String, Void>, TableCell<String, Void>> cellFactoryReject =
+                param -> new TableCell<>() {
+
+                    private final Button btn = new Button();
+
+                    {
+                        btn.setOnAction((ActionEvent event) -> {
+                            String teamName = getTableView().getItems().get(getIndex());
+                            doReject(teamName);
+                        });
+                        btn.setText("REJECT");
+                        btn.setStyle("-fx-background-color: #ff0000");
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty)
+                            setGraphic(null);
+                        else
+                            setGraphic(btn);
+                    }
+                };
+
+        columnButtonReject.setCellFactory(cellFactoryReject);
+        pendingTeamsTableView.getColumns().add(columnButtonReject);
+    }
+
+    private void addAcceptButtonToTable() {
+        TableColumn<String, Void> columnButtonAccept = new TableColumn<>("");
+        Callback<TableColumn<String, Void>, TableCell<String, Void>> cellFactoryAccept =
+                param -> new TableCell<>() {
+
+                    private final Button btn = new Button();
+
+                    {
+                        btn.setOnAction((ActionEvent event) -> {
+                            String teamName = getTableView().getItems().get(getIndex());
+                            doAccept(teamName);
+                        });
+                        btn.setText("ACCEPT");
+                        btn.setStyle("-fx-background-color: #00ff00");
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty)
+                            setGraphic(null);
+                        else
+                            setGraphic(btn);
+                    }
+                };
+
+        columnButtonAccept.setCellFactory(cellFactoryAccept);
+        pendingTeamsTableView.getColumns().add(columnButtonAccept);
+    }
+
+    private void doReject(String teamName) {
+        TeamController.getController().rejectPendingTeam(currentUsername, teamName);
+        setup();
+    }
+
+    private void doAccept(String teamName) {
+        TeamController.getController().acceptPendingTeam(currentUsername, teamName);
+        setup();
     }
 
     @FXML
@@ -86,54 +167,6 @@ public class AdminPanelPageController extends PageController {
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    class PendingTeamRow {
-        private final String pendingTeamName;
-        private final Button rejectTeamButton;
-        private final Button acceptTeamButton;
-        private final int rowIndex;
-
-        public PendingTeamRow(String pendingTeamName, int rowIndex) {
-            this.rowIndex = rowIndex;
-            this.pendingTeamName = pendingTeamName;
-
-            this.rejectTeamButton = new Button();
-            rejectTeamButton.setText("REJECT");
-            rejectTeamButton.setStyle("-fx-background-color: #ff0000");
-            rejectTeamButton.setOnAction(this::doReject);
-
-            this.acceptTeamButton = new Button();
-            acceptTeamButton.setText("ACCEPT");
-            acceptTeamButton.setStyle("-fx-background-color: #00ff00");
-            acceptTeamButton.setOnAction(this::doAccept);
-        }
-
-        private void doReject(ActionEvent event) {
-            TeamController.getController().rejectPendingTeam(currentUsername, pendingTeamName);
-            setup();
-        }
-
-        private void doAccept(ActionEvent event) {
-            TeamController.getController().acceptPendingTeam(currentUsername, pendingTeamName);
-            setup();
-        }
-
-        public String getPendingTeamName() {
-            return pendingTeamName;
-        }
-
-        public Button getRejectTeamButton() {
-            return rejectTeamButton;
-        }
-
-        public Button getAcceptTeamButton() {
-            return acceptTeamButton;
-        }
-
-        public int getRowIndex() {
-            return rowIndex;
         }
     }
 }
