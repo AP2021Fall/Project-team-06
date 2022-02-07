@@ -28,10 +28,7 @@ public class UserController {
     }
     
     public boolean duplicateUsernames(String username){
-        if(User.userExists(username)){
-            return true;
-        }
-        return false;
+        return User.userExists(username);
     }
     
     public boolean duplicateEmails(String email){
@@ -306,13 +303,21 @@ public class UserController {
     }
 
     public String genToken() {
-        int leftLimit = 97;
-        int rightLimit = 122;
-        Random random = new Random();
+//        User user = User.getUserByUsername(username);
+//        if (user != null) {
+            int leftLimit = 97;
+            int rightLimit = 122;
+            Random random = new Random();
 
-        return random.ints(leftLimit, rightLimit + 1)
-                .limit(TOKEN_LEN)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+        //            RPCServer.addToken(token, user);
+
+            return random.ints(leftLimit, rightLimit + 1)
+                    .limit(TOKEN_LEN)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+//        }
+//        else {
+//            return null;
+//        }
     }
 }

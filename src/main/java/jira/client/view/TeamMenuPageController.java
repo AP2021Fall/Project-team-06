@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -56,14 +57,26 @@ public class TeamMenuPageController extends PageController {
     private void prepareTeamListView() {
         TableColumn<TeamStats, String> teamNameColumn = new TableColumn<>("Team Name");
         teamNameColumn.setCellValueFactory(new PropertyValueFactory<TeamStats, String>("teamName"));
-        teamNameColumn.setCellFactory(getTeamListStringCellFactory());
 
         TableColumn<TeamStats, Integer> memberCountColumn = new TableColumn<>("Member Count");
         memberCountColumn.setCellValueFactory(new PropertyValueFactory<TeamStats, Integer>("memberCount"));
-        memberCountColumn.setCellFactory(getTeamListIntegerCellFatory());
 
-        listOfTeams.setItems(getTeamListViewItems());
+        listOfTeams.setRowFactory(param -> {
+            TableRow<TeamStats> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY &&
+                event.getClickCount() == 2) {
+                    TeamStats taskState = row.getItem();
+                    System.out.println(taskState.getTeamName());
+                }
+            });
+            return row;
+        });
+
         listOfTeams.getColumns().addAll(teamNameColumn, memberCountColumn);
+        ObservableList<TeamStats> teamStats = getTeamListViewItems();
+        System.out.println(teamStats.size());
+        listOfTeams.setItems(teamStats);
     }
 
     private ObservableList<TeamStats> getTeamListViewItems() {
@@ -77,30 +90,14 @@ public class TeamMenuPageController extends PageController {
         for (int i = 0; i < teamNames.size(); i++) {
             teamStats.add(new TeamStats(teamNames.get(i), teamCounts.get(i)));
         }
-        System.out.println(teamStats.size());
+
         return teamStats;
     }
 
-    private Callback<TableColumn<TeamStats, String>, TableCell<TeamStats, String>> getTeamListStringCellFactory() {
-        return param -> {
-            TableCell<TeamStats, String> cell = new TableCell<>();
-            cell.addEventFilter(MouseEvent.MOUSE_CLICKED, new GotoTeamHandler());
-            return cell;
-        };
-    }
-
-    private Callback<TableColumn<TeamStats, Integer>, TableCell<TeamStats, Integer>> getTeamListIntegerCellFatory() {
-        return param -> {
-            TableCell<TeamStats, Integer> cell = new TableCell<>();
-            cell.addEventFilter(MouseEvent.MOUSE_CLICKED, new GotoTeamHandler());
-            return cell;
-        };
-    }
-
-    private void openTeamViewPopup() {
+    private void openTeamViewPopup(TeamStats teamStats) {
         pane.setDisable(true);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("registerAccountPopup.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("enterTeamMenu.fxml"));
         try {
             Scene scene = new Scene(fxmlLoader.load());
             Stage newStage = new Stage();
@@ -108,6 +105,8 @@ public class TeamMenuPageController extends PageController {
 
             TeamViewPopupController teamViewPopupController = fxmlLoader.getController();
             teamViewPopupController.setTeamMenuPageController(this);
+            teamViewPopupController.setCurrentUsername(currentUsername);
+            teamViewPopupController.setSelectedTemName(teamStats.getTeamName());
             newStage.setOnHidden(e -> {pane.setDisable(false);});
 
             newStage.show();
@@ -156,39 +155,33 @@ public class TeamMenuPageController extends PageController {
         }
     }
 
-    class GotoTeamHandler implements EventHandler<MouseEvent> {
-        @Override
-        public void handle(MouseEvent event) {
-            TableCell cell = (TableCell) event.getSource();
-            int index = cell.getIndex();
-            TeamStats teamStats = (TeamStats) listOfTeams.getItems().get(index);
-            openTeamViewPopup();
+    protected void memberTeamViewPopupReturn() {
+        pane.setDisable(false);
+    }
+
+    public class TeamStats {
+        private String teamName;
+        private int memberCount;
+
+        public TeamStats(String teamName, int memberCount) {
+            this.teamName = teamName;
+            this.memberCount = memberCount;
         }
-    }
-}
 
-class TeamStats {
-    private String teamName;
-    private int memberCount;
+        public int getMemberCount() {
+            return memberCount;
+        }
 
-    public TeamStats(String teamName, int memberCount) {
-        this.teamName = teamName;
-        this.memberCount = memberCount;
-    }
+        public String getTeamName() {
+            return teamName;
+        }
 
-    public int getMemberCount() {
-        return memberCount;
-    }
+        public void setTeamName(String teamName) {
+            this.teamName = teamName;
+        }
 
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-
-    public void setMemberCount(int memberCount) {
-        this.memberCount = memberCount;
+        public void setMemberCount(int memberCount) {
+            this.memberCount = memberCount;
+        }
     }
 }

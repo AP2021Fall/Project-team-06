@@ -12,12 +12,24 @@ import jira.RPCMessage;
 
 public class RPCServer {
     private static final int PORT = 5000;
+    private static HashMap<String, User> tokenMap;
 
     private ServerSocket serverSocket;
-    private HashMap<String, User> tokenMap;
+
+    public static void addToken(String token, User user) {
+        tokenMap.put(token, user);
+    }
+
+    public static User getUser(String token) {
+        return tokenMap.get(token);
+    }
+
+    public static void deleteToken(String token) {
+        tokenMap.remove(token);
+    }
 
     public RPCServer () {
-        this.tokenMap = new HashMap<>();
+        tokenMap = new HashMap<>();
 
         try {
             this.serverSocket = new ServerSocket(PORT);
@@ -70,7 +82,7 @@ public class RPCServer {
             Class<?> controllerClass = Class.forName(this.getClass().getPackageName() + "." + className);
             Object controllerObject = controllerClass.getMethod("getController").invoke(null);
             Method[] methods = controllerObject.getClass().getMethods();
-            System.out.printf("%s.%s\n%n", className, methodName);
+//            System.out.printf("%s.%s\n%n", className, methodName);
             for (Method method: methods)
                 if (getTailName(method.getName()).equals(methodName))
                     return method.invoke(controllerObject, rpcMessage.getArgs());

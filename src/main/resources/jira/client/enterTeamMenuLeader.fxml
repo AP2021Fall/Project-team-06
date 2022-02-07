@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="367.0" prefWidth="522.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jira.client.view.TeamViewPopupController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="367.0" prefWidth="522.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jira.client.view.TeamViewPopupControllerLeader">
    <top>
       <AnchorPane prefHeight="399.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
@@ -31,8 +31,15 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <Button layoutX="239.0" layoutY="308.0" mnemonicParsing="false" onAction="#close" text="Close" />
             <TableView fx:id="teamMembersTableView" layoutX="27.0" layoutY="91.0" prefHeight="200.0" prefWidth="466.0" />
+            <Button layoutX="394.0" layoutY="53.0" mnemonicParsing="false" onAction="#deleteSelected" text="Delete Selected" />
+            <Button layoutX="393.0" layoutY="14.0" mnemonicParsing="false" onAction="#addMember" prefHeight="26.0" prefWidth="99.0" text="Add Member" />
+            <Button layoutX="29.0" layoutY="316.0" mnemonicParsing="false" onAction="#close" text="Close" />
+            <Label fx:id="resultLabel" layoutX="108.0" layoutY="316.0" prefHeight="26.0" prefWidth="388.0">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </top>

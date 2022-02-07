@@ -5,18 +5,20 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import jira.ControllerResult;
-import jira.Role;
 
 import java.util.ArrayList;
 
-public class TeamViewPopupController extends PageController {
+public class TeamViewPopupControllerLeader extends PageController {
     private String currentUsername;
     private String currentRole;
     private String selectedTemName;
@@ -25,6 +27,7 @@ public class TeamViewPopupController extends PageController {
     @FXML private TableView<MemberData> teamMembersTableView;
     @FXML private Label teamNameLabel;
     @FXML private Label teamScoreLabel;
+    @FXML private Label resultLabel;
 
     protected void setTeamMenuPageController(TeamMenuPageController teamMenuPageController) {
         this.teamMenuPageController = teamMenuPageController;
@@ -67,6 +70,10 @@ public class TeamViewPopupController extends PageController {
     }
 
     private void prepareTeamMemberTableView() {
+        TableColumn<MemberData, Boolean> deleteColumn = new TableColumn<>("");
+        deleteColumn.setCellValueFactory(new PropertyValueFactory<>("delete"));
+        deleteColumn.setCellFactory(param -> new CheckBoxTableCell<>());
+
         TableColumn<MemberData, ImageView> profilePicColumn = new TableColumn<>("Profile Picture");
         profilePicColumn.setCellValueFactory(new PropertyValueFactory<>("profilePic"));
 
@@ -81,17 +88,26 @@ public class TeamViewPopupController extends PageController {
 
         teamMembersTableView.setItems(getMemberTableViewItems());
         teamMembersTableView.getColumns().addAll(
-                profilePicColumn, memberNameColumn, scoreColumn, memberOnlineColumn
+                deleteColumn, profilePicColumn, memberNameColumn, scoreColumn, memberOnlineColumn
         );
     }
 
-//    private void deleteUser(String username) {
-////        ControllerResult result = TeamController.getController().deleteTeamMember(currentUsername, username, selectedTemName);
-//        ControllerResult result = (ControllerResult) new RPCExecutor()
-//                .execute("TeamController", "deleteTeamMember", currentUsername
-//                , username, selectedTemName);
-//        showResult(resultLabel, result);
-//    }
+    @FXML
+    private void deleteSelected(ActionEvent event) {
+
+    }
+
+    @FXML
+    private void addMember(ActionEvent event) {
+
+    }
+
+    private void deleteUser(String username) {
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("TeamController", "deleteTeamMember", currentUsername
+                , username, selectedTemName);
+        showResult(resultLabel, result);
+    }
 
     @FXML
     private void close(ActionEvent event) {
@@ -108,6 +124,7 @@ public class TeamViewPopupController extends PageController {
         private final String memberName;
         private final int score;
         private final Label online;
+        private Boolean delete;
 
         public MemberData(String username) {
             this.memberName = username;
@@ -129,6 +146,8 @@ public class TeamViewPopupController extends PageController {
                 this.online.setText("OFFLINE");
                 this.online.setTextFill(Paint.valueOf("#3CE748"));
             }
+
+            this.delete = false;
         }
 
         public String getMemberName() {
@@ -145,6 +164,14 @@ public class TeamViewPopupController extends PageController {
 
         public ImageView getProfilePic() {
             return profilePic;
+        }
+
+        public Boolean getDelete() {
+            return delete;
+        }
+
+        public void setDelete(Boolean delete) {
+            this.delete = delete;
         }
     }
 }
