@@ -140,6 +140,8 @@ public class UserController {
     
     public ControllerResult changeUsername(String username, String assignedUser){
         User user = User.getUserByUsername(assignedUser);
+        assert user != null;
+
         if (username.length() < 4)
             return new ControllerResult("Your username must include at least 4 characters!", false);
         else if (username.equals(assignedUser))

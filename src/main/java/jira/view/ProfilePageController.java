@@ -65,12 +65,55 @@ public class ProfilePageController extends PageController {
 
     @FXML
     private void changeUsername(ActionEvent event) {
-        System.out.println("CHANGE POPUP");
+        pane.setDisable(true);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("changeUsernamePopup.fxml"));
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+
+            ChangeUsernamePopupController changeUsernamePopupController = fxmlLoader.getController();
+            changeUsernamePopupController.setCurrentUsername(currentUsername);
+            changeUsernamePopupController.setProfilePageController(this);
+            newStage.setOnHidden(e -> {pane.setDisable(false);});
+
+            newStage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void changePasswordPopupReturn(ActionEvent event) {
+        pane.setDisable(false);
+        gotoLoginPage(event);
+    }
+
+    protected void changeUsernamePopupReturn() {
+        pane.setDisable(false);
     }
 
     @FXML
     private void changePassword(ActionEvent event) {
-        System.out.println("CHANGE POPUP");
+        pane.setDisable(true);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("changePasswordPopup.fxml"));
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+
+            ChangePasswordPopupController changePasswordPopupController = fxmlLoader.getController();
+            changePasswordPopupController.setCurrentUsername(currentUsername);
+            changePasswordPopupController.setProfilePageController(this);
+            newStage.setOnHidden(e -> {pane.setDisable(false);});
+
+            newStage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -149,6 +192,20 @@ public class ProfilePageController extends PageController {
             mainMenuPageController.setCurrentUsername(currentUsername);
             mainMenuPageController.setRole(currentRole);
             mainMenuPageController.setup();
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void gotoLoginPage(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(JiraApp.class.getResource("login.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) pane.getScene().getWindow();
 
             stage.setScene(scene);
             stage.show();

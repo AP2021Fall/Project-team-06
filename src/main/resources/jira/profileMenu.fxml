@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="304.0" prefWidth="409.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jira.view.ProfilePageController">
+<BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="304.0" prefWidth="409.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jira.view.ProfilePageController">
    <center>
-      <AnchorPane fx:id="pane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="profilePicImageView" fitHeight="100.0" fitWidth="100.0" layoutX="14.0" layoutY="14.0" onDragDropped="#uploadPicDnD" onDragExited="#stopAskingForUploadPicDnD" onDragOver="#askToUploadPicDnD" onMouseEntered="#askToUploadPic" onMouseExited="#stopAskingForUploadPic" pickOnBounds="true" preserveRatio="true">
                <image>
