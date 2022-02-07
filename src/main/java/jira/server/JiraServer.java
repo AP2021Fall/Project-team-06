@@ -1,7 +1,7 @@
 package jira.server;
 
 import jira.server.controller.RPCServer;
-import jira.server.model.Role;
+import jira.Role;
 import jira.server.model.User;
 import jira.server.model.UserSave;
 

@@ -1,7 +1,7 @@
 package controller;
 
 import jira.server.controller.BoardController;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.model.Board;
 import jira.server.model.Task;
 import jira.server.model.Team;

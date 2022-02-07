@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.scene.image.Image;
-import jira.server.model.Role;
+import jira.ControllerResult;
+import jira.Role;
 import jira.server.model.Task;
 import jira.server.model.Team;
 import jira.server.model.User;

@@ -7,10 +7,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Paint;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.TeamController;
 import jira.server.controller.UserController;
-import jira.server.model.Role;
+import jira.Role;
 
 import java.util.ArrayList;
 

@@ -5,8 +5,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+import jira.ControllerResult;
 import jira.server.model.Board;
-import jira.server.model.Role;
+import jira.Role;
 import jira.server.model.Task;
 import jira.server.model.Team;
 import jira.server.model.User;

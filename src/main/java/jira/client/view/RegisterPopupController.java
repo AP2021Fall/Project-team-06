@@ -1,7 +1,7 @@
 package jira.client.view;
 
 import javafx.scene.input.KeyEvent;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.UserController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

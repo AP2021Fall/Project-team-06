@@ -1,4 +1,4 @@
-package jira.server.controller;
+package jira;
 
 public class ControllerResult {
 	public final String message;

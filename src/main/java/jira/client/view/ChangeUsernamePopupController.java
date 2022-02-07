@@ -6,7 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.UserController;
 
 public class ChangeUsernamePopupController extends PageController {

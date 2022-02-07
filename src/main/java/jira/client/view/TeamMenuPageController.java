@@ -15,7 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jira.client.JiraApp;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.TeamController;
 
 import java.io.IOException;

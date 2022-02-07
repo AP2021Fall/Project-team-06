@@ -1,4 +1,4 @@
-package jira.server.model;
+package jira;
 
 public enum Role {
 	ADMIN {

@@ -8,7 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.UserController;
 
 public class ChangePasswordPopupController extends PageController {

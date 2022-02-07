@@ -1,7 +1,8 @@
 package jira.server.controller;
 
+import jira.ControllerResult;
 import jira.server.model.Priority;
-import jira.server.model.Role;
+import jira.Role;
 import jira.server.model.Task;
 import jira.server.model.User;
 

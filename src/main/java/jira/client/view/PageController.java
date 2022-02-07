@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import jira.client.JiraApp;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.image.Image;

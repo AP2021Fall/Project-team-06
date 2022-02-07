@@ -15,10 +15,6 @@ public class RPCMessage implements Serializable {
         this.args = args;
     }
 
-    public <T> T getArg(int index) {
-        return (T) args[index];
-    }
-
     public String getToken() {
         return token;
     }

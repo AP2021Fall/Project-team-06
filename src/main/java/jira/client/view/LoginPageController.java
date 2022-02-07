@@ -2,7 +2,7 @@ package jira.client.view;
 
 import javafx.scene.Node;
 import jira.client.JiraApp;
-import jira.server.controller.ControllerResult;
+import jira.ControllerResult;
 import jira.server.controller.UserController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import jira.server.model.Role;
+import jira.Role;
 
 import java.io.IOException;
 

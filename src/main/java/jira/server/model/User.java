@@ -1,9 +1,7 @@
 package jira.server.model;
 
 import javafx.scene.image.Image;
-import jira.client.JiraApp;
-import jira.server.JiraServer;
-
+import jira.Role;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
