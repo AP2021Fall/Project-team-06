@@ -1,11 +1,11 @@
 package controller;
 
-import jira.controller.ControllerResult;
-import jira.controller.TasksController;
-import jira.model.Board;
-import jira.model.Task;
-import jira.model.Team;
-import jira.model.User;
+import jira.server.controller.ControllerResult;
+import jira.server.controller.TasksController;
+import jira.server.model.Board;
+import jira.server.model.Task;
+import jira.server.model.Team;
+import jira.server.model.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

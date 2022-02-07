@@ -3,9 +3,11 @@ module jira {
     requires javafx.fxml;
     requires javafx.media;
 
-    opens jira to javafx.fxml, javafx.graphics;
-    opens jira.view to javafx.fxml, javafx.media;
-    exports jira.view;
-    exports jira.controller;
-    exports jira.model;
+    opens jira.client.view to javafx.fxml, javafx.media;
+    exports jira.client.view;
+    exports jira.server.controller;
+    exports jira.server.model;
+    opens jira.client to javafx.fxml, javafx.graphics;
+    exports jira;
+    opens jira to javafx.fxml, javafx.media;
 }
