@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import jira.client.JiraApp;
 import jira.ControllerResult;
-import jira.server.controller.TeamController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,8 +68,12 @@ public class TeamMenuPageController extends PageController {
 
     private ObservableList<TeamStats> getTeamListViewItems() {
         final ObservableList<TeamStats> teamStats = FXCollections.observableArrayList();
-        ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
-        ArrayList<Integer> teamCounts = TeamController.getController().getAffiliatedTeamsMemberCount(currentUsername);
+//        ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
+        ArrayList<String> teamNames = (ArrayList<String>) new RPCExecutor()
+                .execute("TeamController", "showTeamsAffiliated", currentUsername);
+//        ArrayList<Integer> teamCounts = TeamController.getController().getAffiliatedTeamsMemberCount(currentUsername);
+        ArrayList<Integer> teamCounts = (ArrayList<Integer>) new RPCExecutor()
+                .execute("TeamController", "getAffiliatedTeamsMemberCount", currentUsername);
         for (int i = 0; i < teamNames.size(); i++) {
             teamStats.add(new TeamStats(teamNames.get(i), teamCounts.get(i)));
         }
@@ -121,7 +124,9 @@ public class TeamMenuPageController extends PageController {
     @FXML
     private void createTeam(ActionEvent event) {
         String teamName = getTextFromField(teamNameField);
-        ControllerResult result = TeamController.getController().creatTeam(currentUsername, teamName);
+//        ControllerResult result = TeamController.getController().creatTeam(currentUsername, teamName);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("TeamController", "creatTeam", currentUsername, teamName);
         showResult(errorField, result);
     }
 

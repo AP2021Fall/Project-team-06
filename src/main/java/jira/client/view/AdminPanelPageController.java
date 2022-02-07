@@ -13,8 +13,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jira.client.JiraApp;
-import jira.server.controller.TeamController;
-import jira.server.controller.UserController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +48,9 @@ public class AdminPanelPageController extends PageController {
     }
 
     private void populateUsersTableView() {
-        ArrayList<String> userNames = UserController.getController().getAllUsernames();
+//        ArrayList<String> userNames = UserController.getController().getAllUsernames();
+        ArrayList<String> userNames = (ArrayList<String>) new RPCExecutor()
+                .execute("UserController", "getAllUsernames");
         TableColumn<String, String> username = new TableColumn<>("Username");
         username.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
 
@@ -60,7 +60,9 @@ public class AdminPanelPageController extends PageController {
     }
 
     private void populatePendingTeamsTableView() {
-        ArrayList<String> pendingTeamNames = TeamController.getController().getPendingTeams();
+//        ArrayList<String> pendingTeamNames = TeamController.getController().getPendingTeams();
+        ArrayList<String> pendingTeamNames = (ArrayList<String>) new RPCExecutor()
+                .execute("TeamController", "getPendingTeams");
         pendingTeamsTableView.setEditable(true);
 
         TableColumn<String, String> pendingTeamName = new TableColumn<>("Team Name");
@@ -135,12 +137,14 @@ public class AdminPanelPageController extends PageController {
     }
 
     private void doReject(String teamName) {
-        TeamController.getController().rejectPendingTeam(currentUsername, teamName);
+//        TeamController.getController().rejectPendingTeam(currentUsername, teamName);
+        new RPCExecutor().execute("TeamController", "rejectPendingTeam", currentUsername, teamName);
         setup();
     }
 
     private void doAccept(String teamName) {
-        TeamController.getController().acceptPendingTeam(currentUsername, teamName);
+//        TeamController.getController().acceptPendingTeam(currentUsername, teamName);
+        new RPCExecutor().execute("TeamController", "acceptPendingTeam", currentUsername, teamName);
         setup();
     }
 
@@ -151,7 +155,8 @@ public class AdminPanelPageController extends PageController {
 
     @FXML
     private void back(ActionEvent event) {
-        UserController.getController().logout(currentUsername);
+//        UserController.getController().logout(currentUsername);
+        new RPCExecutor().execute("UserController", "logout", currentUsername);
         currentUsername = null;
         gotoLoginPage(event);
     }

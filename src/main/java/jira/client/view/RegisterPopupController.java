@@ -2,7 +2,6 @@ package jira.client.view;
 
 import javafx.scene.input.KeyEvent;
 import jira.ControllerResult;
-import jira.server.controller.UserController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,7 +14,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class RegisterPopupController extends PageController {
-    private final UserController userController = UserController.getController();
     private LoginPageController loginPageController;
 
     @FXML private BorderPane pane;
@@ -37,7 +35,10 @@ public class RegisterPopupController extends PageController {
         String pass2 = getTextFromField(pass2Field);
         String email = getTextFromField(emailField);
 
-        ControllerResult result = userController.createUser(username, pass1, pass2, email);
+//        ControllerResult result = userController.createUser(username, pass1, pass2, email);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("UserController", "createUser", username
+                , pass1, pass2, email);
         showResult(errors, result);
 
         if (result.success)

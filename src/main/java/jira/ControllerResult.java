@@ -1,6 +1,8 @@
 package jira;
 
-public class ControllerResult {
+import java.io.Serializable;
+
+public class ControllerResult implements Serializable {
 	public final String message;
 	public final boolean success;
 	

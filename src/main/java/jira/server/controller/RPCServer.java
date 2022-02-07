@@ -70,6 +70,7 @@ public class RPCServer {
             Class<?> controllerClass = Class.forName(this.getClass().getPackageName() + "." + className);
             Object controllerObject = controllerClass.getMethod("getController").invoke(null);
             Method[] methods = controllerObject.getClass().getMethods();
+            System.out.printf("%s.%s\n%n", className, methodName);
             for (Method method: methods)
                 if (getTailName(method.getName()).equals(methodName))
                     return method.invoke(controllerObject, rpcMessage.getArgs());

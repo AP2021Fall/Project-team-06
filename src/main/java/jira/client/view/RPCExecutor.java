@@ -6,9 +6,9 @@ import java.io.*;
 import java.net.Socket;
 
 public class RPCExecutor {
+    private static String token;
     private static final String serverIp = "127.0.0.1";
     private static final int serverPort = 5000;
-    private final String token;
 
     private Socket socket;
     private ObjectOutputStream objectOutputStream;
@@ -16,7 +16,7 @@ public class RPCExecutor {
 
     public RPCExecutor() {
         try {
-            this.token = setToken();
+            setToken();
             closeAll();
             this.socket = new Socket(serverIp, serverPort);
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -40,20 +40,21 @@ public class RPCExecutor {
         }
     }
 
-    private String setToken() {
+    private void setToken() {
+        if (token != null)
+            return;
+
         try {
             this.socket = new Socket(serverIp, serverPort);
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
 
             RPCMessage rpcMessage = new RPCMessage("", "UserController", "genToken", null);
-            return  (String) exec(rpcMessage);
+            token = (String) exec(rpcMessage);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        return null;
     }
 
     private Object exec(RPCMessage rpcMessage) {

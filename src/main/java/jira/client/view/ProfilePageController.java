@@ -16,8 +16,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jira.client.JiraApp;
-import jira.server.controller.UserController;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,11 +54,17 @@ public class ProfilePageController extends PageController {
     }
 
     private void setEmailLabel() {
-        emailLabel.setText(UserController.getController().getEmail(currentUsername));
+//        emailLabel.setText(UserController.getController().getEmail(currentUsername));
+        emailLabel.setText((String) new RPCExecutor()
+                .execute("UserController", "getEmail", currentUsername)
+        );
     }
 
     private void setScoreLabel() {
-        scoreLabel.setText(Integer.toString(UserController.getController().getScore(currentUsername)));
+//        scoreLabel.setText(Integer.toString(UserController.getController().getScore(currentUsername)));
+        scoreLabel.setText(Integer.toString((int) new RPCExecutor()
+                .execute("UserController", "getScore", currentUsername))
+        );
     }
 
     @FXML
@@ -171,7 +175,8 @@ public class ProfilePageController extends PageController {
                 new FileInputStream(fileToSend.getAbsolutePath())
         );
 
-        UserController.getController().setProfilePic(currentUsername, newImage);
+//        UserController.getController().setProfilePic(currentUsername, newImage);
+        new RPCExecutor().execute("UserController", "setProfilePic", currentUsername, newImage);
         setCurrentUserProfilePic(newImage);
     }
 

@@ -21,13 +21,11 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jira.client.JiraApp;
-import jira.server.controller.TeamController;
-import jira.server.controller.UserController;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainMenuPageController extends PageController {
     private String currentUsername;
@@ -109,7 +107,12 @@ public class MainMenuPageController extends PageController {
     }
 
     private void setCurrentUserProfilePic() {
-        profilePicView.setImage(UserController.getController().getProfilePic(currentUsername));
+//        profilePicView.setImage(UserController.getController().getProfilePic(currentUsername));
+        Image image = (Image) new RPCExecutor()
+                .execute("UserController", "getProfilePic", currentUsername);
+        profilePicView.setImage(Objects.requireNonNullElseGet(
+                image, () -> new Image(String.valueOf(JiraApp.class.getResource("profile-pics/default-prof-pic.png"))))
+        );
     }
 
     private void setLeaderOrMemberLabel() {
@@ -121,7 +124,9 @@ public class MainMenuPageController extends PageController {
         teamNamesColumn.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue()));
 
         currentUserTeams.getColumns().add(teamNamesColumn);
-        ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
+//        ArrayList<String> teamNames = TeamController.getController().showTeamsAffiliated(currentUsername);
+        ArrayList<String> teamNames = (ArrayList<String>) new RPCExecutor()
+                .execute("TeamController", "showTeamsAffiliated", currentUsername);
         ObservableList<String> rows = FXCollections.observableArrayList(teamNames);
         currentUserTeams.setItems(rows);
     }
@@ -189,13 +194,15 @@ public class MainMenuPageController extends PageController {
                 new FileInputStream(fileToSend.getAbsolutePath())
         );
 
-        UserController.getController().setProfilePic(currentUsername, newImage);
+//        UserController.getController().setProfilePic(currentUsername, newImage);
+        new RPCExecutor().execute("UserController", "setProfilePic", currentUsername, newImage);
         setCurrentUserProfilePic();
     }
 
     @FXML
     private void back(ActionEvent event) {
-        UserController.getController().logout(currentUsername);
+//        UserController.getController().logout(currentUsername);
+        new RPCExecutor().execute("UserController", "logout", currentUsername);
         currentUsername = null;
         role = null;
         cachedProfilePicImage = null;

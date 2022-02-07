@@ -271,6 +271,7 @@ public class UserController {
     }
 
     public Image getProfilePic(String username) {
+        System.out.println(username);
         User user = User.getUserByUsername(username);
         assert user != null;
         return user.getProfiePic();
@@ -305,8 +306,8 @@ public class UserController {
     }
 
     public String genToken() {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
+        int leftLimit = 97;
+        int rightLimit = 122;
         Random random = new Random();
 
         return random.ints(leftLimit, rightLimit + 1)

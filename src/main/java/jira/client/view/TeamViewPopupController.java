@@ -5,11 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Paint;
 import jira.ControllerResult;
-import jira.server.controller.TeamController;
-import jira.server.controller.UserController;
 import jira.Role;
 
 import java.util.ArrayList;
@@ -47,7 +46,9 @@ public class TeamViewPopupController extends PageController {
 
     private ObservableList<MemberData> getMemberTableViewItems() {
         final ObservableList<MemberData> memberData = FXCollections.observableArrayList();
-        ArrayList<String> memberUsernames = TeamController.getController().getMemberData(selectedTemName);
+//        ArrayList<String> memberUsernames = TeamController.getController().getMemberData(selectedTemName);
+        ArrayList<String> memberUsernames = (ArrayList<String>) new RPCExecutor()
+                .execute("TeamController", "getMemberData", selectedTemName);
 
         for (String memberUsername: memberUsernames)
             memberData.add(new MemberData(memberUsername));
@@ -78,7 +79,10 @@ public class TeamViewPopupController extends PageController {
     }
 
     private void deleteUser(String username) {
-        ControllerResult result = TeamController.getController().deleteTeamMember(currentUsername, username, selectedTemName);
+//        ControllerResult result = TeamController.getController().deleteTeamMember(currentUsername, username, selectedTemName);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("TeamController", "deleteTeamMember", currentUsername
+                , username, selectedTemName);
         showResult(resultLabel, result);
     }
 
@@ -112,17 +116,24 @@ public class TeamViewPopupController extends PageController {
         private final Button deleteButton;
 
         public MemberData(String username) {
-            UserController userController = UserController.getController();
-
             this.memberName = username;
 
             this.profilePic = new ImageView();
-            setProfPic(profilePic, userController.getProfilePic(username));
+//            setProfPic(profilePic, userController.getProfilePic(username));
+            setProfPic(profilePic, (Image) new RPCExecutor()
+                    .execute("UserController", "getProfilePic", username)
+            );
 
-            this.score = userController.getScore(username);
+//            this.score = userController.getScore(username);
+            this.score = (int) new RPCExecutor()
+                    .execute("UserController", "getScore", username);
             this.online = new Label();
 
-            if (userController.isOnline(username)) {
+//            if (userController.isOnline(username)) {
+//                this.online.setText("ONLINE");
+//                this.online.setTextFill(Paint.valueOf("#E74C3C"));
+//            }
+            if ((Boolean) new RPCExecutor().execute("UserController", "isOnline", username)) {
                 this.online.setText("ONLINE");
                 this.online.setTextFill(Paint.valueOf("#E74C3C"));
             }

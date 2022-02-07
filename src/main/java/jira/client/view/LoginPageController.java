@@ -3,7 +3,6 @@ package jira.client.view;
 import javafx.scene.Node;
 import jira.client.JiraApp;
 import jira.ControllerResult;
-import jira.server.controller.UserController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,8 +17,6 @@ import jira.Role;
 import java.io.IOException;
 
 public class LoginPageController extends PageController {
-    private static final UserController userController = UserController.getController();
-
     @FXML private BorderPane pane;
     @FXML private Label errorField;
     @FXML private TextField usernameField;
@@ -29,10 +26,15 @@ public class LoginPageController extends PageController {
     private void login(ActionEvent event) {
         String username = getTextFromField(usernameField);
         String password = getTextFromField(passwordField);
-        ControllerResult result = userController.login(username, password);
+
+//        ControllerResult result = UserController.getController().login(username, password);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("UserController", "login", username, password);
 
         showResult(errorField, result);
-        String role = userController.getUserRole(username).message;
+//        String role = UserController.getController().getUserRole(username).message;
+        String role = ((ControllerResult) new RPCExecutor()
+                .execute("UserController", "getUserRole", username)).message;
 
         if (result.success) {
             if (role.equals(Role.ADMIN.toString()))

@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import jira.ControllerResult;
-import jira.server.controller.UserController;
 
 public class ChangePasswordPopupController extends PageController {
     private String currentUsername;
@@ -33,9 +32,12 @@ public class ChangePasswordPopupController extends PageController {
     private void submitNewPassword(ActionEvent event) {
         String previousPassword = getTextFromField(previousPasswordField);
         String newPassword = getTextFromField(newPasswordField);
-        ControllerResult result = UserController.getController().changeUserPassword(
-                currentUsername, previousPassword, newPassword
-        );
+//        ControllerResult result = UserController.getController().changeUserPassword(
+//                currentUsername, previousPassword, newPassword
+//        );
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("UserController", "changeUserPassword", currentUsername,
+                        previousPassword, newPassword);
         showResult(errorArea, result);
 
         if (result.success)

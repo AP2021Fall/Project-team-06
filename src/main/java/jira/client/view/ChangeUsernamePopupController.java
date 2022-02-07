@@ -7,7 +7,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import jira.ControllerResult;
-import jira.server.controller.UserController;
 
 public class ChangeUsernamePopupController extends PageController {
     private String currentUsername;
@@ -27,7 +26,9 @@ public class ChangeUsernamePopupController extends PageController {
     @FXML
     private void submitNewUsername(ActionEvent event) {
         String newUsername = getTextFromField(usernameField);
-        ControllerResult result = UserController.getController().changeUsername(newUsername, currentUsername);
+//        ControllerResult result = UserController.getController().changeUsername(newUsername, currentUsername);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("UserController", "changeUsername", newUsername, currentUsername);
         showResult(errorArea, result);
 
         if (result.success)
