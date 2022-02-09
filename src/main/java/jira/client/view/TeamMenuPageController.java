@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import jira.Role;
 import jira.client.JiraApp;
 import jira.ControllerResult;
 
@@ -66,8 +67,15 @@ public class TeamMenuPageController extends PageController {
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY &&
                 event.getClickCount() == 2) {
-                    TeamStats taskState = row.getItem();
-                    System.out.println(taskState.getTeamName());
+                    TeamStats teamStats = row.getItem();
+                    System.out.println(teamStats.getTeamName());
+                    if(currentRole.equals(Role.MEMBER.toString())) {
+                        openTeamViewPopup(teamStats);
+                    }
+                    else if (currentRole.equals(Role.LEADER.toString())) {
+//                        System.out.println("HERE");
+                        openTeamViewPopupLeader(teamStats);
+                    }
                 }
             });
             return row;
@@ -107,6 +115,28 @@ public class TeamMenuPageController extends PageController {
             teamViewPopupController.setTeamMenuPageController(this);
             teamViewPopupController.setCurrentUsername(currentUsername);
             teamViewPopupController.setSelectedTemName(teamStats.getTeamName());
+            newStage.setOnHidden(e -> {pane.setDisable(false);});
+
+            newStage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openTeamViewPopupLeader(TeamStats teamStats) {
+        pane.setDisable(true);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(JiraApp.class.getResource("enterTeamMenuLeader.fxml"));
+        try {
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+
+            TeamViewPopupControllerLeader teamViewPopupControllerLeader = fxmlLoader.getController();
+            teamViewPopupControllerLeader.setTeamMenuPageController(this);
+            teamViewPopupControllerLeader.setCurrentUsername(currentUsername);
+            teamViewPopupControllerLeader.setSelectedTemName(teamStats.getTeamName());
             newStage.setOnHidden(e -> {pane.setDisable(false);});
 
             newStage.show();

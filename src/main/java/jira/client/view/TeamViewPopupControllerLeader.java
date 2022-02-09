@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import jira.ControllerResult;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TeamViewPopupControllerLeader extends PageController {
     private String currentUsername;
@@ -28,6 +30,7 @@ public class TeamViewPopupControllerLeader extends PageController {
     @FXML private Label teamNameLabel;
     @FXML private Label teamScoreLabel;
     @FXML private Label resultLabel;
+    @FXML private TextField newMemberNameField;
 
     protected void setTeamMenuPageController(TeamMenuPageController teamMenuPageController) {
         this.teamMenuPageController = teamMenuPageController;
@@ -94,12 +97,28 @@ public class TeamViewPopupControllerLeader extends PageController {
 
     @FXML
     private void deleteSelected(ActionEvent event) {
+        final HashSet<MemberData> chosenMembers = new HashSet<>();
+        for (MemberData memberData: teamMembersTableView.getItems())
+            if (memberData.getDelete())
+                chosenMembers.add(memberData);
 
+        for (MemberData chosenMember: chosenMembers)
+            new RPCExecutor().execute("TeamController", "deleteTeamMember",
+                    chosenMember.getMemberName(), currentUsername, selectedTemName);
+        teamMembersTableView.getItems().removeAll(chosenMembers);
+
+        setup();
     }
 
     @FXML
     private void addMember(ActionEvent event) {
-
+        String newMemberName = getTextFromField(newMemberNameField);
+        ControllerResult result = (ControllerResult) new RPCExecutor()
+                .execute("TeamController", "addMemberToTeam", currentUsername,
+                        selectedTemName, newMemberName);
+        showResult(resultLabel, result);
+        if (result.success)
+            setup();
     }
 
     private void deleteUser(String username) {
